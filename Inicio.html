@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galería de Videos Solicitados</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+            color: #333;
+        }
+
+        header {
+            background: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        #video-form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        #video-form label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        #video-form input, #video-form textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        #video-form button {
+            background: #333;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        #video-form button:hover {
+            background: #555;
+        }
+
+        #videos-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #videos-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .video-card {
+            width: 200px;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            background: #fff;
+            text-align: center;
+        }
+
+        .video-card img {
+            width: 100%;
+            height: auto;
+        }
+
+        .video-card h3 {
+            padding: 10px;
+            font-size: 1rem;
+            background: #333;
+            color: #fff;
+            margin: 0;
+        }
+
+        .video-card p {
+            padding: 10px;
+            font-size: 0.9rem;
+            background: #f0f0f0;
+            margin: 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            background: #333;
+            color: #fff;
+            margin-top: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 25px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #modal-video {
+            width: 100%;
+            height: auto;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 5px solid #3498db;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+            margin: auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Galería de Videos Solicitados</h1>
+    </header>
+    <main>
+        <section id="video-form">
+            <h2>Agregar Video</h2>
+            <form id="add-video-form">
+                <label for="video-title">Nombre del Video:</label>
+                <input type="text" id="video-title" required>
+                
+                <label for="video-url">URL del Video:</label>
+                <input type="url" id="video-url" required>
+                
+                <label for="video-thumbnail">URL de la Portada:</label>
+                <input type="url" id="video-thumbnail" required>
+                
+                <label for="video-requester">Solicitado por:</label>
+                <input type="text" id="video-requester" required>
+                
+                <button type="submit">Agregar Video</button>
+            </form>
+        </section>
+        
+        <section id="videos-container">
+            <h2>Videos</h2>
+            <div id="videos-list"></div>
+        </section>
+    </main>
+    <footer>
+        <p>© 2024 Galería de Videos. Todos los derechos reservados.</p>
+    </footer>
+
+    <div id="video-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <video id="modal-video" controls></video>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const videoForm = document.getElementById('add-video-form');
+            const videosList = document.getElementById('videos-list');
+            const videoModal = document.getElementById('video-modal');
+            const modalVideo = document.getElementById('modal-video');
+            const closeModal = document.querySelector('.close-btn');
+
+            videoForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const title = document.getElementById('video-title').value;
+                const url = document.getElementById('video-url').value;
+                const thumbnail = document.getElementById('video-thumbnail').value;
+                const requester = document.getElementById('video-requester').value;
+
+                const videoCard = document.createElement('div');
+                videoCard.className = 'video-card';
+                videoCard.innerHTML = `
+                    <img src="${thumbnail}" alt="${title}">
+                    <h3>${title}</h3>
+                    <p>Solicitado por: ${requester}</p>
+                `;
+                videoCard.addEventListener('click', () => {
+                    modalVideo.src = url;
+                    videoModal.style.display = 'block';
+                });
+
+                videosList.appendChild(videoCard);
+
+                videoForm.reset();
+            });
+
+            closeModal.addEventListener('click', () => {
+                videoModal.style.display = 'none';
+                modalVideo.pause();
+            });
+
+            window.addEventListener('click', (event) => {
+                if (event.target == videoModal) {
+                    videoModal.style.display = 'none';
+                    modalVideo.pause();
+                }
+            });
+
+            modalVideo.addEventListener('waiting', () => {
+                const loader = document.createElement('div');
+                loader.className = 'loader';
+                videoModal.appendChild(loader);
+            });
+
+            modalVideo.addEventListener('playing', () => {
+                const loader = document.querySelector('.loader');
+                if (loader) {
+                    videoModal.removeChild(loader);
+                }
+            });
+
+            modalVideo.addEventListener('touchstart', handleTouchStart, false);
+            modalVideo.addEventListener('touchmove', handleTouchMove, false);
+
+            let xDown = null;
+
+            function getTouches(evt) {
+                return evt.touches || evt.originalEvent.touches;
+            }
+
+            function handleTouchStart(evt) {
+                const firstTouch = getTouches(evt)[0];
+                xDown = firstTouch.clientX;
+            }
+
+            function handleTouchMove(evt) {
+                if (!xDown) {
+                    return;
+                }
+
+                const xUp = evt.touches[0].clientX;
+                const xDiff = xDown - xUp;
+
+                if (xDiff > 0) {
+                    modalVideo.currentTime += 10; // Adelantar 10 segundos
+                } else {
+                    modalVideo.currentTime -= 10; // Retroceder 10 segundos
+                }
+
+                xDown = null;
+            }
+        });
+    </script>
+</body>
+  </html>
