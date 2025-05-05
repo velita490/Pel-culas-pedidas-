@@ -1,0 +1,2474 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galería de Razas de Perros</title>
+<style>
+/*------------------------------------*
+ * VARIABLES & GENERAL STYLES
+ *------------------------------------*/
+ :root {
+    --color-pearl: #f8f6f1;
+    --color-accent: #e8e4d9;
+    --color-text: #3a3a3a;
+    --color-highlight: #d4c9b0;
+    --color-dark: #5a5245;
+    --color-light: #ffffff;
+    --color-success: #8cb369;
+    --color-warning: #f4a259;
+    --color-error: #e57373;
+    --transition-speed: 0.3s;
+    --transition-smooth: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smoother transition */
+    --border-radius: 15px;
+    --box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* Softer shadow */
+    --box-shadow-hover: 0 8px 25px rgba(0,0,0,0.12);
+    --font-primary: 'Segoe UI', 'Roboto', 'Arial', sans-serif; /* Modern font stack */
+    --font-size-tiny: 0.8rem;
+    --font-size-small: 0.9rem;
+    --font-size-normal: 1rem;
+    --font-size-medium: 1.15rem;
+    --font-size-large: 1.4rem;
+    --font-size-xlarge: 1.8rem;
+    --font-size-xxlarge: 2.2rem;
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --nav-height-initial: 70px; /* Approx initial height of top nav */
+    --nav-height-sticky-bottom: 55px; /* Height of sticky bottom nav */
+
+     /* Nuevo color para la barra de navegación inferior */
+     --color-nav-mobile: #F0EDE6; /* Beige muy claro, un poco más oscuro que --color-pearl */
+     --bottom-nav-float-bottom: 20px; /* Distancia de la barra flotante al borde inferior */
+     --bottom-nav-float-width: 90%; /* Ancho de la barra flotante */
+     --bottom-nav-float-max-width: 700px; /* Ancho máximo de la barra flotante */
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+    font-family: var(--font-primary);
+    background-color: var(--color-pearl);
+    color: var(--color-text);
+    line-height: 1.65; /* Improved readability */
+    overflow-x: hidden;
+    font-size: var(--font-size-normal);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    transition: background-color var(--transition-speed) ease;
+    /* padding-bottom: var(--nav-height-sticky-bottom); */ /* Padding handled by JS visibility */
+}
+body.modal-open { overflow: hidden; }
+main { flex: 1; width: 100%; padding-top: var(--spacing-lg); } /* Added padding-top */
+h1, h2, h3, h4, h5, h6 { color: var(--color-dark); font-weight: 600; line-height: 1.3; margin-bottom: var(--spacing-md); }
+a { color: var(--color-dark); text-decoration: none; transition: color var(--transition-speed) ease; }
+a:hover { color: var(--color-highlight); }
+img { max-width: 100%; height: auto; display: block; }
+button { cursor: pointer; border: none; font-family: inherit; background: none; transition: all var(--transition-speed) ease; }
+button:hover { opacity: 0.85; }
+ul, ol { list-style-position: inside; } /* Consistent list styling */
+p { margin-bottom: var(--spacing-md); }
+p:last-of-type { margin-bottom: 0; }
+
+/* Typography Sizes */
+h1 {font-size: clamp(1.8rem, 5vw, var(--font-size-xxlarge));}
+h2 {font-size: clamp(1.5rem, 4vw, var(--font-size-xlarge));}
+h3 {font-size: clamp(1.2rem, 3.5vw, var(--font-size-large));}
+h4 {font-size: var(--font-size-medium);}
+p, li {font-size: var(--font-size-normal);}
+
+/* Container */
+.container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-lg); }
+
+/*------------------------------------*
+ * HEADER & LOGO
+ *------------------------------------*/
+header {
+    background-color: var(--color-pearl);
+    text-align: center;
+    padding: var(--spacing-lg) 0 0 0; /* Reduced padding */
+    border-bottom: 1px solid var(--color-accent);
+}
+.logo-container { display: flex; justify-content: center; margin-bottom: var(--spacing-sm); }
+.logo {
+    width: 100px; /* Slightly smaller logo */
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+    box-shadow: var(--box-shadow);
+    transition: transform var(--transition-speed) ease;
+}
+.logo:hover { transform: scale(1.05); }
+header h1 { text-transform: uppercase; letter-spacing: 2px; margin: var(--spacing-sm) 0 var(--spacing-md) 0; color: var(--color-dark); }
+
+/*------------------------------------*
+ * TOP NAVIGATION (#mainNav)
+ *------------------------------------*/
+#mainNav {
+    background-color: var(--color-highlight);
+    padding: var(--spacing-sm) 0; /* Reduced padding */
+    text-align: center;
+    position: sticky;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out, background-color var(--transition-speed) ease, padding var(--transition-speed) ease; /* Added transform/opacity */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+     min-height: var(--nav-height-initial);
+     align-items: center;
+}
+#mainNav.scrolled { /* Subtle background change on slight scroll */
+    background-color: rgba(212, 201, 176, 0.95);
+    backdrop-filter: blur(5px);
+}
+#mainNav.hidden { /* Hide when scrolling down */
+    transform: translateY(-110%); /* Move completely off screen */
+    opacity: 0;
+    pointer-events: none;
+}
+.nav-item { /* Shared by top and bottom nav */
+    color: var(--color-dark);
+    margin: 5px var(--spacing-sm);
+    text-decoration: none;
+    font-size: var(--font-size-normal);
+    text-transform: uppercase;
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: 20px;
+    transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease, color var(--transition-speed) ease;
+    letter-spacing: 1px;
+    font-weight: 500;
+    display: inline-block;
+}
+.nav-item:hover {
+    background-color: rgba(255,255,255,0.3);
+    transform: translateY(-2px);
+}
+
+/*------------------------------------*
+ * STICKY BOTTOM NAVIGATION (#stickyBottomNav)
+ * Modificaciones solicitadas: Color, bordes redondeados, flotante y visible instantáneamente al bajar
+ *------------------------------------*/
+#stickyBottomNav {
+    position: fixed;
+    bottom: var(--bottom-nav-float-bottom); /* Distancia del borde inferior */
+    left: 50%; /* Centrar horizontalmente */
+    transform: translateX(-50%) translateY(150%); /* Empezar oculto y centrado abajo */
+    width: var(--bottom-nav-float-width); /* No ocupa todo el ancho */
+    max-width: var(--bottom-nav-float-max-width); /* Ancho máximo para escritorio */
+    height: var(--nav-height-sticky-bottom);
+    background-color: var(--color-nav-mobile); /* Color solicitado */
+    box-shadow: var(--box-shadow-hover); /* Sombra más prominente para flotar */
+    z-index: 1010; /* Above content, below modals */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 var(--spacing-md); /* Ajuste de padding */
+    opacity: 0; /* Empezar invisible */
+    visibility: hidden;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out, visibility 0s linear 0.3s, background-color var(--transition-speed) ease; /* Transición rápida, visibility con delay */
+    backdrop-filter: blur(5px);
+    border-radius: var(--border-radius); /* Bordes redondeados en todas las esquinas */
+}
+/* Clase añadida por JS cuando es visible */
+#stickyBottomNav.visible-element {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0); /* Volver a posición normal y centrado */
+     transition: transform 0.3s ease-out, opacity 0.3s ease-out, visibility 0s linear 0s, background-color var(--transition-speed) ease; /* Visibilidad instantánea al mostrar */
+}
+#stickyBottomNav .nav-item { /* Style items in bottom nav */
+    color: var(--color-dark); /* Cambiado a color oscuro para el fondo claro */
+    font-size: var(--font-size-small); /* Smaller text */
+    padding: var(--spacing-xs) var(--spacing-sm);
+    margin: 0 var(--spacing-xs);
+}
+#stickyBottomNav .nav-item:hover {
+    background-color: rgba(90, 82, 69, 0.1); /* Overlay tenue del color oscuro */
+    transform: none; /* No lift effect */
+    color: var(--color-dark); /* Keep text dark */
+}
+
+/* Ajustes para la barra inferior en móvil */
+ @media (max-width: 768px) {
+     #stickyBottomNav {
+         bottom: var(--bottom-nav-float-bottom); /* Ajuste distancia móvil */
+         width: 95%; /* Más ancho en móvil */
+         padding: 0 var(--spacing-sm);
+     }
+     #stickyBottomNav .nav-item {
+         font-size: var(--font-size-tiny); /* Botones más pequeños */
+         padding: 2px 6px; /* Reduce el padding */
+         margin: 0 3px; /* Reduce el margen para juntarlos más */
+     }
+ }
+
+
+/*------------------------------------*
+ * SEARCH BUBBLE & MODAL
+ *------------------------------------*/
+/* Top search container in header */
+.search-container {
+    position: relative;
+    margin-bottom: var(--spacing-lg);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Vertically align */
+     height: 50px; /* Give it some height */
+     transition: opacity var(--transition-smooth);
+}
+ .search-container.hidden { /* Hide when scrolling */
+    opacity: 0;
+    pointer-events: none;
+ }
+
+.search-bar { /* Input field in header */
+    padding: var(--spacing-sm) var(--spacing-lg);
+    width: 50%;
+    max-width: 400px;
+    border-radius: 25px;
+    border: 1px solid var(--color-accent);
+    font-size: var(--font-size-normal);
+    transition: all var(--transition-speed) ease;
+    background-color: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.search-bar:focus {
+    outline: none;
+    border-color: var(--color-highlight);
+    box-shadow: 0 0 12px rgba(0,0,0,0.1);
+}
+
+/* Search Trigger Bubble (Top Right) */
+#searchBubbleTrigger {
+    position: fixed;
+    top: 15px; /* Adjust position */
+    right: 15px;
+    z-index: 1050;
+    width: 45px; /* Size */
+    height: 45px;
+    background-color: var(--color-dark);
+    color: var(--color-light);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.3rem; /* Icon size */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    cursor: pointer;
+    opacity: 0; /* Hidden initially */
+    transform: scale(0);
+    transition: opacity var(--transition-smooth), transform var(--transition-smooth);
+    border: 2px solid var(--color-light);
+}
+#searchBubbleTrigger.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+#searchBubbleTrigger svg { /* SVG icon styling */
+     width: 20px;
+     height: 20px;
+     fill: currentColor;
+ }
+
+/* Search Modal */
+#searchModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Overlay */
+    display: flex;
+    justify-content: center;
+    /* align-items: center; Changed to top */
+    align-items: flex-start; /* Align to top */
+    padding-top: 10vh; /* Push modal down slightly */
+    z-index: 1100;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    backdrop-filter: blur(4px);
+}
+#searchModal.visible {
+    opacity: 1;
+    visibility: visible;
+}
+.search-modal-content {
+    background-color: var(--color-light);
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius);
+    max-width: 90%;
+    width: 600px;
+    max-height: 70vh; /* Limit height */
+    /* overflow-y: auto; No, results container scrolls */
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transform: translateY(-20px); /* Start slightly up */
+    transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    flex-direction: column; /* Stack input and results */
+}
+#searchModal.visible .search-modal-content {
+     transform: translateY(0);
+ }
+.search-modal-close-btn { /* Shared with other modals */
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    background: none; border: none; font-size: 1.8rem;
+    color: var(--color-text); cursor: pointer; line-height: 1; padding: 5px;
+    transition: transform var(--transition-speed) ease, color var(--transition-speed) ease;
+}
+.search-modal-close-btn:hover { color: var(--color-error); transform: scale(1.1); }
+
+#modalSearchInput { /* Search input inside modal */
+    width: 100%;
+    padding: var(--spacing-md);
+    border-radius: 10px;
+    border: 2px solid var(--color-accent);
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-medium);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+ #modalSearchInput:focus {
+    border-color: var(--color-highlight);
+    box-shadow: 0 0 8px rgba(212, 201, 176, 0.5);
+    outline: none;
+ }
+
+#modalSearchResults { /* Results container inside modal */
+    max-height: 45vh; /* Limit results height */
+    overflow-y: auto;
+    border-top: 1px solid var(--color-accent); /* Separator */
+     margin-top: var(--spacing-sm);
+}
+ #modalSearchResults .search-result-item { /* Style results (reuse class) */
+     display: flex; align-items: center; padding: var(--spacing-sm) var(--spacing-sm);
+     cursor: pointer; border-bottom: 1px solid var(--color-accent);
+     transition: background-color var(--transition-speed) ease;
+ }
+ #modalSearchResults .search-result-item:last-child { border-bottom: none; }
+ #modalSearchResults .search-result-item:hover { background-color: var(--color-pearl); }
+ #modalSearchResults .search-result-item img { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; margin-right: var(--spacing-md); flex-shrink: 0; }
+ #modalSearchResults .search-result-item span { font-size: var(--font-size-normal); color: var(--color-text); }
+
+
+/*------------------------------------*
+ * CONTENT SECTIONS & TITLES
+ *------------------------------------*/
+.content {
+    margin: 0 auto var(--spacing-xl) auto; /* Removed top margin */
+    padding: var(--spacing-lg);
+    max-width: 1200px;
+    text-align: center;
+    opacity: 0; /* Controlled by JS */
+    animation: fadeIn 0.6s ease-out forwards;
+    display: none; /* Controlled by JS */
+    width: 100%;
+}
+.content.active-section { display: block; } /* JS adds this */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } /* Simpler fade */
+
+.section-title {
+    color: var(--color-dark);
+    margin-bottom: var(--spacing-lg); /* Reduced margin */
+    position: relative;
+    display: inline-block;
+    padding-bottom: var(--spacing-sm);
+    font-weight: 700; /* Bolder titles */
+}
+.section-title:after {
+    content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 60px; /* Shorter underline */ height: 4px;
+    background: linear-gradient(to right, var(--color-highlight), var(--color-accent));
+    border-radius: 2px;
+}
+.section-content { max-width: 900px; margin: 0 auto var(--spacing-xl) auto; text-align: center; }
+.section-content p { text-align: left; line-height: 1.7; }
+ .loading-placeholder {
+     text-align: center;
+     padding: var(--spacing-xl);
+     color: var(--color-text);
+     opacity: 0.7;
+ }
+
+
+/*-----------------------------------------------------*
+ * BREED STYLES (.breed-gallery, .breed-card, etc.)
+ * CSS rules for how breeds look.
+ * To add a new breed, copy/paste data in the JS `dogBreeds` array.
+ *-----------------------------------------------------*/
+.breed-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--spacing-lg); margin-top: var(--spacing-lg); }
+.breed-card {
+    text-align: center; background-color: white; border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow); position: relative; overflow: hidden;
+    opacity: 0; transform: translateY(20px); /* Animate entry */
+    transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
+}
+.breed-card:hover { transform: translateY(-8px); box-shadow: var(--box-shadow-hover); }
+.breed-card a { display: block; padding: 0; text-decoration: none; color: inherit; } /* Link covers card */
+.breed-card:before { /* Top accent border */
+     content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
+     background: linear-gradient(to right, var(--color-highlight), var(--color-accent)); opacity: 0.8;
+}
+.breed-card-image { /* Image inside card */
+     width: 100%; height: 200px; object-fit: cover; border-radius: 0; /* Remove radius if accent border is used */
+     transition: transform var(--transition-speed) ease; display: block; padding: 0; margin: 0; /* Ensure no extra space */
+     border-bottom: 1px solid var(--color-accent); /* Separator */
+}
+.breed-card:hover .breed-card-image { transform: scale(1.03); }
+.breed-card-content { padding: var(--spacing-md); } /* Container for text */
+.breed-card-title { /* Breed name in card */
+     font-size: var(--font-size-medium); margin-top: 0; margin-bottom: var(--spacing-xs);
+     font-weight: 600; color: var(--color-dark);
+}
+.breed-card-desc { /* Short description in card */
+     font-size: var(--font-size-small); color: var(--color-text); margin: 0;
+     overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+     line-height: 1.4;
+}
+
+/* Breed Detail Page Styles */
+.breed-detail { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: var(--spacing-xl); }
+.breed-main-image { width: 100%; max-width: 600px; border-radius: var(--border-radius); box-shadow: var(--box-shadow); margin-bottom: var(--spacing-lg); }
+.breed-detail h2 { margin-bottom: var(--spacing-md); text-align: center; }
+.breed-detail p { font-size: var(--font-size-normal); line-height: 1.7; color: var(--color-text); max-width: 800px; text-align: left; margin-bottom: var(--spacing-lg); }
+
+/* Mini Gallery on Breed Page */
+.mini-gallery { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--spacing-md); margin: var(--spacing-lg) 0; max-width: 900px; }
+.mini-gallery-img {
+    width: 100px; height: 100px; object-fit: cover; border-radius: 10px; cursor: pointer;
+    transition: all var(--transition-speed) ease; box-shadow: var(--box-shadow);
+    opacity: 0; transform: scale(0.8); /* Animate entry */
+}
+.mini-gallery-img:hover { transform: scale(1.1); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+
+/* Characteristics Section on Breed Page */
+.breed-characteristics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--spacing-lg); margin: var(--spacing-lg) auto; max-width: 900px; }
+.characteristic {
+    background-color: var(--color-light); padding: var(--spacing-lg); border-radius: 10px;
+    box-shadow: var(--box-shadow); text-align: center; border-left: 4px solid var(--color-highlight);
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+.characteristic:hover { transform: translateY(-5px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
+.characteristic h3 { color: var(--color-dark); font-size: var(--font-size-medium); margin-bottom: var(--spacing-sm); }
+.characteristic p { font-size: var(--font-size-normal); color: var(--color-text); text-align: center; margin: 0; }
+
+/* Food Recommendations Section on Breed Page */
+.food-recommendations {
+    background-color: var(--color-light); border-radius: var(--border-radius); padding: var(--spacing-lg);
+    margin: var(--spacing-xl) auto; box-shadow: var(--box-shadow); max-width: 900px;
+    border-top: 5px solid var(--color-highlight); text-align: center;
+}
+ .food-recommendations h3 { font-size: var(--font-size-large); margin-bottom: var(--spacing-sm); }
+ .food-recommendations p { text-align: center; max-width: 700px; margin-left: auto; margin-right: auto; }
+ .food-recommendations p strong { display: block; margin-top: var(--spacing-md); }
+.recommended-foods { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--spacing-sm); margin-top: var(--spacing-md); }
+.food-chip { /* Style for food links on breed page */
+    background-color: var(--color-accent); padding: var(--spacing-xs) var(--spacing-md); border-radius: 25px;
+    font-size: var(--font-size-small); cursor: pointer; transition: all var(--transition-speed) ease;
+    color: var(--color-dark); font-weight: 500;
+}
+.food-chip:hover { background-color: var(--color-highlight); transform: translateY(-2px) scale(1.03); box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
+
+
+/*-----------------------------------------------------*
+ * FOOD STYLES (.food-gallery, .food-card, etc.)
+ * CSS rules for how foods look.
+ * To add new food, copy/paste data in the JS `dogFoods` array.
+ *-----------------------------------------------------*/
+.food-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-lg); margin-top: var(--spacing-lg); }
+.food-card {
+    background-color: var(--color-light); border-radius: var(--border-radius); overflow: hidden;
+    box-shadow: var(--box-shadow); transition: all var(--transition-smooth); cursor: pointer;
+}
+.food-card:hover { transform: translateY(-8px); box-shadow: var(--box-shadow-hover); }
+.food-card-img { width: 100%; height: 200px; object-fit: cover; transition: transform var(--transition-speed) ease; display: block; }
+.food-card:hover .food-card-img { transform: scale(1.03); }
+.food-card-header { padding: var(--spacing-md); display: flex; justify-content: space-between; align-items: center; background-color: #fff; /* Ensure header is solid */ }
+.food-card-title { color: var(--color-dark); font-size: var(--font-size-large); margin: 0; font-weight: 600; }
+.expand-btn { /* Button to expand food details */
+     background-color: var(--color-accent); width: 28px; height: 28px; border-radius: 50%;
+     cursor: pointer; display: flex; justify-content: center; align-items: center;
+     transition: all var(--transition-speed) ease; flex-shrink: 0; border: none;
+}
+.expand-btn:hover { background-color: var(--color-highlight); transform: rotate(90deg); opacity: 1; }
+.expand-icon { font-size: 1.1rem; font-weight: bold; line-height: 1; color: var(--color-dark); }
+.food-card-content { /* Hidden content area */
+     padding: 0 var(--spacing-md); max-height: 0; overflow: hidden;
+     transition: max-height 0.5s ease-out, padding 0.5s ease-out, visibility 0s linear 0.5s; /* Delay visibility change */
+     visibility: hidden; background-color: var(--color-light); /* Ensure background */
+}
+.food-card.expanded .food-card-content { padding: var(--spacing-sm) var(--spacing-md) var(--spacing-md); max-height: 700px; visibility: visible; transition-delay: 0s; }
+.food-card.expanded .expand-btn { transform: rotate(45deg); }
+.food-card-desc { color: var(--color-text); margin-bottom: var(--spacing-md); line-height: 1.6; text-align: left; font-size: var(--font-size-normal); }
+.benefits-title { color: var(--color-dark); font-size: var(--font-size-normal); font-weight: 600; margin-bottom: var(--spacing-xs); text-align: left; }
+.benefits-list { margin: 0 0 var(--spacing-md) 0; padding-left: var(--spacing-lg); text-align: left; list-style: disc; }
+.benefits-list li { margin-bottom: var(--spacing-xs); font-size: var(--font-size-normal); }
+
+/* Recommended Breeds Section within Food Card */
+.breed-suggestions { background-color: var(--color-pearl); border-radius: 10px; padding: var(--spacing-sm) var(--spacing-md); margin-top: var(--spacing-md); border-left: 3px solid var(--color-highlight); }
+.breed-suggestions h4 { color: var(--color-dark); margin-bottom: var(--spacing-sm); text-align: left; font-size: var(--font-size-normal); font-weight: 600; }
+.breed-pills { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); }
+.breed-pill { /* Style for breed links in food card */
+    background-color: var(--color-highlight); color: var(--color-dark); padding: 2px var(--spacing-sm); border-radius: 15px;
+    font-size: var(--font-size-tiny); cursor: pointer; transition: all var(--transition-speed) ease; font-weight: 500;
+}
+.breed-pill:hover { background-color: var(--color-dark); color: var(--color-light); transform: translateY(-1px); }
+
+
+/*------------------------------------*
+ * CALCULATOR STYLES
+ *------------------------------------*/
+.calculator-container { display: flex; flex-direction: column; align-items: center; width: 100%; margin-bottom: var(--spacing-xl); }
+.calculator-modes { display: flex; margin-bottom: var(--spacing-lg); background-color: var(--color-accent); border-radius: 30px; overflow: hidden; padding: var(--spacing-xs); box-shadow: inset 0 1px 3px rgba(0,0,0,0.06); }
+.calculator-mode { padding: var(--spacing-sm) var(--spacing-md); cursor: pointer; font-weight: 600; transition: all var(--transition-speed) ease; color: var(--color-dark); border-radius: 25px; border: none; background: none; font-size: var(--font-size-small); }
+.calculator-mode.active { background-color: var(--color-light); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+.calculator {
+     background-color: var(--color-light); padding: var(--spacing-lg); border-radius: var(--border-radius);
+     width: 100%; max-width: 600px; margin: 0 auto; box-shadow: var(--box-shadow); border: 1px solid var(--color-accent);
+     transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease;
+}
+#calculadoraSimple { display: block; }
+#calculadoraAvanzada { display: none; }
+.calculator label { display: block; margin-bottom: var(--spacing-xs); font-weight: 600; color: var(--color-dark); text-align: left; font-size: var(--font-size-normal); }
+.calculator select, .calculator input, .calculator textarea {
+     width: 100%; padding: var(--spacing-sm); border-radius: 8px; border: 1px solid var(--color-accent);
+     margin-bottom: var(--spacing-md); font-size: var(--font-size-normal); transition: all var(--transition-speed) ease;
+     box-shadow: inset 0 1px 2px rgba(0,0,0,0.04); font-family: inherit; background-color: #fff;
+}
+.calculator input[type="range"] { padding: 0; box-shadow: none; border: none; }
+.calculator select:focus, .calculator input:focus, .calculator textarea:focus {
+     border-color: var(--color-highlight); box-shadow: 0 0 5px rgba(212, 201, 176, 0.5); outline: none;
+}
+.calculator button[onclick^="calcularAlimento"] { /* Target only calc buttons */
+     padding: var(--spacing-sm) var(--spacing-lg); background: linear-gradient(to right, var(--color-highlight), var(--color-accent));
+     color: var(--color-dark); border: none; border-radius: 25px; font-size: var(--font-size-normal); font-weight: 700;
+     cursor: pointer; transition: all var(--transition-speed) ease; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+     text-transform: uppercase; letter-spacing: 0.5px; display: block; width: 100%; margin-top: var(--spacing-sm);
+}
+.calculator button[onclick^="calcularAlimento"]:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); opacity: 1; }
+.calculator-result { /* #resultado, #resultadoAvanzado */
+     font-size: var(--font-size-normal); margin-top: var(--spacing-lg); font-weight: normal; color: var(--color-text);
+     padding: var(--spacing-md); border-radius: 10px; background-color: var(--color-pearl); /* Lighter background */
+     display: none; text-align: left; line-height: 1.5; border: 1px solid var(--color-accent); width: 100%;
+}
+.calculator-result.visible { display: block; animation: fadeInResult 0.5s ease-out; }
+@keyframes fadeInResult { from{opacity:0; transform: translateY(10px);} to{opacity:1; transform:translateY(0);} }
+.calculator-result span { display: block; margin-bottom: var(--spacing-xs); font-weight: bold; color: var(--color-dark); }
+.calculator-result strong { color: var(--color-success); font-weight: 700; } /* Highlight result number */
+.calculator-result small { display: block; margin-top: var(--spacing-sm); font-size: var(--font-size-small); color: var(--color-text); opacity: 0.8; }
+.advanced-options { background-color: var(--color-pearl); padding: var(--spacing-md); border-radius: 10px; margin: var(--spacing-md) 0; border: 1px dashed var(--color-accent); }
+.advanced-options h3 { color: var(--color-dark); margin-bottom: var(--spacing-md); text-align: left; font-size: var(--font-size-medium); border-bottom: 1px solid var(--color-accent); padding-bottom: var(--spacing-sm); }
+#activityValue { display: inline-block; margin-left: var(--spacing-sm); font-weight: bold; color: var(--color-dark); background-color: var(--color-accent); padding: 2px 6px; border-radius: 5px; font-size: var(--font-size-small); }
+.food-recommendation { /* Recommendation box in calculator */
+     background-color: var(--color-pearl); border-radius: 10px; padding: var(--spacing-md); margin-top: var(--spacing-md);
+     text-align: left; border-left: 4px solid var(--color-success); box-shadow: var(--box-shadow);
+     opacity: 0; max-height: 0; overflow: hidden; transition: all 0.5s ease-out; visibility: hidden;
+}
+.food-recommendation.visible { opacity: 1; max-height: 1000px; visibility: visible; margin-top: var(--spacing-lg); }
+.food-recommendation h3 { color: var(--color-dark); margin-bottom: var(--spacing-sm); font-size: var(--font-size-medium); }
+.food-recommendation h4 { color: var(--color-dark); margin: var(--spacing-sm) 0 var(--spacing-xs); font-size: var(--font-size-normal); font-weight: bold; }
+.food-recommendation p, .food-recommendation ul { margin-bottom: var(--spacing-sm); text-align: left; font-size: var(--font-size-normal); }
+.food-recommendation ul { padding-left: var(--spacing-lg); list-style: disc; }
+
+
+/*------------------------------------*
+ * LIGHTBOX STYLES (Image zoom)
+ *------------------------------------*/
+.lightbox {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85);
+    display: flex; justify-content: center; align-items: center; z-index: 2000;
+    opacity: 0; pointer-events: none; transition: opacity 0.4s ease; backdrop-filter: blur(3px);
+}
+.lightbox.active { opacity: 1; pointer-events: all; }
+.lightbox-content { max-width: 90%; max-height: 90%; border-radius: 5px; transform: scale(0.8); transition: transform 0.4s ease; object-fit: contain; }
+.lightbox.active .lightbox-content { transform: scale(1); }
+.lightbox-close {
+    position: absolute; top: 15px; right: 20px; color: white; font-size: 2.2rem;
+    cursor: pointer; line-height: 1; transition: transform var(--transition-speed) ease; background: none; border: none; padding: 5px;
+}
+.lightbox-close:hover { transform: scale(1.1) rotate(90deg); }
+
+
+/*------------------------------------*
+ * FOOTER STYLES (The actual footer tag)
+ * Modificaciones solicitadas: Más compacto y visible solo en el 15% inferior
+ *------------------------------------*/
+footer {
+    background-color: var(--color-dark); color: var(--color-pearl); padding: var(--spacing-md) var(--spacing-lg); /* Reducido padding */
+    text-align: center; margin-top: auto; border-top: 4px solid var(--color-highlight);
+    /* Controlado por JS y clase visible-element */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-smooth);
+    display: none; /* Oculto por defecto, mostrado con .visible-element */
+}
+/* Clase añadida por JS cuando es visible */
+ footer.visible-element {
+    opacity: 1;
+    visibility: visible;
+    display: block; /* Mostrar el footer */
+ }
+
+.footer-container {
+     display: flex;
+     flex-wrap: wrap;
+     justify-content: center; /* Centrado horizontalmente */
+     gap: var(--spacing-lg); /* Espacio entre columnas */
+     max-width: 800px; /* Ancho máximo ajustado */
+     margin: 0 auto var(--spacing-md) auto; /* Centrado y margen inferior */
+     text-align: left;
+     padding: 0 var(--spacing-sm); /* Padding interno para no pegar a los bordes en móvil */
+}
+.footer-section {
+     flex: 1 1 250px; /* Flex basis ajustado */
+     margin-bottom: var(--spacing-md);
+     /* Asegura que Acerca De y Contacto queden uno a la izquierda y otro a la derecha en pantallas grandes */
+     display: flex;
+     flex-direction: column;
+     align-items: flex-start; /* Alinea el contenido a la izquierda */
+}
+/* Ajuste específico para pantallas grandes para Acerca De y Contacto */
+@media (min-width: 768px) {
+    .footer-container {
+         justify-content: space-around; /* Distribuye espacio entre elementos */
+         gap: var(--spacing-xl); /* Más espacio en pantallas grandes */
+    }
+     .footer-section:nth-child(1), /* Acerca De */
+     .footer-section:nth-child(2) { /* Contacto */
+         flex: 0 1 auto; /* No se estiran, solo ocupan su contenido */
+         min-width: 200px; /* Ancho mínimo */
+     }
+     .footer-section:nth-child(3) { /* Enlaces Rápidos */
+         flex: 0 1 auto; /* No se estira */
+     }
+}
+
+.footer-section h3 { color: var(--color-light); font-size: var(--font-size-medium); margin-bottom: var(--spacing-sm); border-bottom: 1px solid var(--color-highlight); padding-bottom: var(--spacing-xs); display: inline-block; }
+.footer-section p, .footer-section ul { color: var(--color-accent); font-size: var(--font-size-small); margin-bottom: 0; line-height: 1.5; }
+.footer-section ul { list-style: none; padding: 0; }
+.footer-section li { margin-bottom: var(--spacing-xs); }
+.footer-section a { color: var(--color-light); text-decoration: none; border-bottom: 1px dotted var(--color-accent); transition: color var(--transition-speed) ease, border-color var(--transition-speed) ease; }
+.footer-section a:hover { color: var(--color-highlight); border-bottom-color: var(--color-highlight); }
+.footer-modal-button {
+     background-color: var(--color-highlight); color: var(--color-dark); padding: var(--spacing-xs) var(--spacing-md);
+     border-radius: 15px; font-weight: 600; cursor: pointer; display: inline-block; margin-top: var(--spacing-sm);
+     border: none; font-size: var(--font-size-small);
+}
+.footer-modal-button:hover { background-color: var(--color-accent); transform: translateY(-1px); box-shadow: 0 2px 5px rgba(0,0,0,0.1); opacity: 1; }
+.footer-legal { margin-top: var(--spacing-md); padding-top: var(--spacing-md); border-top: 1px solid var(--color-accent); font-size: var(--font-size-tiny); color: var(--color-accent); opacity: 0.8; }
+.footer-legal a, .footer-legal button.link-style {
+     margin: 0 var(--spacing-xs); color: var(--color-light); text-decoration: underline; text-decoration-thickness: 1px;
+     text-underline-offset: 2px; background: none; border: none; padding: 0; cursor: pointer; font-size: inherit; font-family: inherit;
+}
+.footer-legal a:hover, .footer-legal button.link-style:hover { color: var(--color-highlight); text-decoration-thickness: 1px; }
+
+
+/*------------------------------------*
+ * MODAL STYLES (General)
+ *------------------------------------*/
+.modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.65);
+    display: flex; justify-content: center; align-items: center; z-index: 1100;
+    opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s ease; backdrop-filter: blur(3px);
+}
+.modal.visible { opacity: 1; visibility: visible; }
+.modal-content {
+    background-color: var(--color-light); padding: var(--spacing-lg); border-radius: var(--border-radius);
+    max-width: 90%; width: 700px; max-height: 85vh; overflow-y: auto; position: relative;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15); transform: scale(0.95);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1); /* Smoother bounce */
+}
+.modal.visible .modal-content { transform: scale(1); }
+.modal-close-btn { /* Shared close button style */
+    position: absolute; top: 8px; right: 12px; background: none; border: none; font-size: 1.8rem;
+    color: var(--color-text); cursor: pointer; line-height: 1; padding: 5px;
+    transition: transform var(--transition-speed) ease, color var(--transition-speed) ease; opacity: 0.7;
+}
+.modal-close-btn:hover { color: var(--color-error); transform: scale(1.1) rotate(90deg); opacity: 1; }
+.modal-content h2 { /* Modal Title */
+     margin-top: 0; margin-bottom: var(--spacing-md); color: var(--color-dark); text-align: left;
+     border-bottom: 1px solid var(--color-accent); padding-bottom: var(--spacing-sm); font-size: var(--font-size-large);
+}
+.modal-content p, .modal-content ul { text-align: left; color: var(--color-text); font-size: var(--font-size-normal); line-height: 1.7; }
+.modal-content ul { list-style: disc; padding-left: var(--spacing-lg); }
+.modal-content strong { color: var(--color-dark); font-weight: 600; }
+.modal-content h3 { font-size: var(--font-size-medium); margin-top: var(--spacing-lg); margin-bottom: var(--spacing-xs); color: var(--color-dark); }
+
+
+/*------------------------------------*
+ * COOKIE CONSENT BANNER
+ *------------------------------------*/
+#cookieConsentBanner {
+    position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(50, 50, 50, 0.95);
+    color: var(--color-light); padding: var(--spacing-sm) var(--spacing-md);
+    display: flex; justify-content: space-between; align-items: center; z-index: 1500;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.15); opacity: 0; transform: translateY(100%);
+    transition: opacity 0.5s ease, transform 0.5s ease; flex-wrap: wrap; gap: var(--spacing-sm);
+}
+#cookieConsentBanner.show { opacity: 1; transform: translateY(0); }
+#cookieConsentBanner p { margin: 0; font-size: var(--font-size-small); flex-grow: 1; color: var(--color-light); line-height: 1.4; }
+#cookieConsentBanner button {
+     padding: var(--spacing-xs) var(--spacing-md); background-color: var(--color-highlight); color: var(--color-dark);
+     border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: background-color var(--transition-speed) ease;
+     flex-shrink: 0; font-size: var(--font-size-small);
+}
+#cookieConsentBanner button:hover { background-color: var(--color-accent); opacity: 1; }
+#cookieConsentBanner button.link-style { /* Make privacy link look like text */
+     background: none; color: var(--color-light); text-decoration: underline; text-decoration-thickness: 1px;
+     text-underline-offset: 2px; background: none; border: none; padding: 0; cursor: pointer; font-size: inherit; font-family: inherit;
+}
+ #cookieConsentBanner button.link-style:hover { background: none; color: var(--color-highlight); }
+
+
+/*------------------------------------*
+ * RESPONSIVE & PRINT STYLES
+ *------------------------------------*/
+@media (max-width: 992px) {
+     .footer-container { flex-direction: column; align-items: center; text-align: center; }
+     .footer-section { min-width: 80%; text-align: center; margin-bottom: var(--spacing-lg); }
+     .footer-section h3 { display: block; }
+     /* Asegura que las secciones Acerca De/Contacto se apilen en pantallas medianas */
+     .footer-section:nth-child(1), .footer-section:nth-child(2), .footer-section:nth-child(3) {
+         flex: 1 1 80%; /* Volver a ocupar más ancho cuando se apilan */
+         min-width: auto;
+     }
+}
+@media (max-width: 768px) {
+    :root { --font-size-xlarge: 1.6rem; --font-size-large: 1.3rem; --font-size-medium: 1.1rem; }
+    .search-bar { width: 70%; }
+    .modal-content { width: 90%; }
+    #cookieConsentBanner { text-align: center; justify-content: center; }
+    #stickyBottomNav .nav-item { font-size: var(--font-size-tiny); margin: 0 2px; padding: var(--spacing-xs) var(--spacing-sm); }
+     .breed-gallery, .food-gallery { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+     /* Ajuste específico para la barra flotante en móvil */
+     #stickyBottomNav {
+         bottom: var(--bottom-nav-float-bottom-mobile, 10px); /* Ajuste distancia móvil */
+         width: 95%; /* Más ancho en móvil */
+         padding: 0 var(--spacing-sm);
+     }
+}
+@media (max-width: 576px) {
+    :root { --spacing-lg: 16px; --font-size-normal: 0.9rem; --font-size-medium: 1rem; --font-size-large: 1.15rem; --bottom-nav-float-bottom-mobile: 8px; }
+    #mainNav { min-height: 60px; }
+    .nav-item { margin: 2px 3px; padding: 3px 6px; font-size: 0.8rem; }
+    #stickyBottomNav .nav-item { font-size: 0.75rem; padding: 2px 4px; margin: 0 1px; }
+    .mini-gallery-img { width: 80px; height: 80px; }
+    .calculator select, .calculator input, .calculator textarea, .calculator button[onclick^="calcularAlimento"] { padding: var(--spacing-sm); font-size: var(--font-size-small); }
+    .calculator-result { padding: var(--spacing-sm); font-size: var(--font-size-small); }
+    .footer-modal-button { font-size: var(--font-size-small); }
+    .modal-content { padding: var(--spacing-md); }
+    .modal-content h2 { font-size: var(--font-size-large); }
+    #searchBubbleTrigger { width: 40px; height: 40px; font-size: 1.1rem; top: 10px; right: 10px; }
+     #searchModal { padding-top: 5vh; }
+     .search-modal-content { width: 95%; }
+     #modalSearchResults .search-result-item img { width: 35px; height: 35px; margin-right: var(--spacing-sm);}
+     #modalSearchResults .search-result-item span { font-size: var(--font-size-small);}
+     #cookieConsentBanner { padding: var(--spacing-sm); }
+     #cookieConsentBanner p { font-size: var(--font-size-tiny); }
+     #cookieConsentBanner button { font-size: var(--font-size-tiny); padding: var(--spacing-xs) var(--spacing-sm); }
+}
+@media print {
+    body { background-color: white; color: black; font-size: 10pt; display: block; min-height: auto; padding-bottom: 0 !important; }
+    header, nav, #stickyBottomNav, #searchBubbleTrigger, .search-container, button, .lightbox, footer, #cookieConsentBanner, .modal, .expand-btn { display: none !important; }
+    main { flex: none; padding-top: 0; }
+    .content { margin: 0; padding: 1cm; display: block !important; opacity: 1; transform: none; animation: none; }
+    .breed-gallery, .food-gallery, .breed-characteristics { display: block; } /* Stack in print */
+    .breed-card, .food-card, .characteristic, .calculator { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; margin-bottom: 1cm; }
+    a { text-decoration: none; color: black; }
+    img { max-width: 150px !important; height: auto !important; } /* Smaller images in print */
+     .breed-main-image { max-width: 50% !important; }
+    .food-card-content, .food-recommendation { max-height: none !important; opacity: 1; overflow: visible; visibility: visible; padding: 5px; }
+    .food-card-img, .mini-gallery { display: none; } /* Hide image galleries in print */
+     h1, h2, h3 { page-break-after: avoid; }
+}
+
+/* Utilities */
+.hidden { display: none !important; }
+.visually-hidden { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
+
+ /* Clase para controlar visibilidad con JS */
+ .visible-element {
+     opacity: 1 !important;
+     visibility: visible !important;
+ }
+ /* Transformación específica para la barra flotante cuando es visible */
+ #stickyBottomNav.visible-element {
+    transform: translateX(-50%) translateY(0);
+ }
+ /* El footer simplemente cambia display/opacity/visibility */
+ footer.visible-element {
+     display: block;
+ }
+</style>
+</head>
+<body>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="Información completa sobre razas de perros y alimentación canina. Guía de cuidados, características de razas populares y calculadora de alimentación para tu mascota." name="description"/>
+<meta content="razas de perros, alimentación canina, cuidado de mascotas, labrador, bulldog, pastor alemán, calculadora comida perros" name="keywords"/>
+<meta content="Raz DOG liment" name="author"/>
+<meta content="index, follow" name="robots"/>
+<meta content="Raz DOG liment - Portal Canino" property="og:title"/>
+<meta content="La guía definitiva sobre razas caninas y alimentación para tu perro" property="og:description"/>
+<meta content="https://i.ibb.co/8L8GJy3n/portada-1.png" property="og:image"/>
+<meta content="website" property="og:type"/>
+<link href="https://i.ibb.co/8L8GJy3n/portada-1.png" rel="icon" type="image/png"/>
+<title>Raz DOG liment - Portal Canino</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+<header>
+<div class="logo-container">
+<img alt="Logo Raz DOG liment" class="logo" onclick="showSection('inicio');" src="https://i.ibb.co/DDDyvMXs/german-shepherd4.jpg"/>
+</div>
+<h1>Raz Dog liment</h1>
+<div class="search-container" id="headerSearchContainer">
+    <input class="search-bar" id="headerSearchBar" placeholder="Busca una raza de perro..." type="text" aria-label="Buscar raza de perro" onfocus="openSearchModal()" />
+</div>
+</header>
+
+<nav id="mainNav">
+    <span class="loading-placeholder">Cargando menú...</span>
+</nav>
+
+<nav id="stickyBottomNav" class="visible-element">
+    </nav>
+
+<button id="searchBubbleTrigger" aria-label="Abrir búsqueda" onclick="openSearchModal()">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+        <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/>
+    </svg>
+</button>
+
+<div class="modal" id="searchModal" onclick="closeSearchModalOnClickOutside(event)">
+    <div class="search-modal-content" role="dialog" aria-modal="true" aria-labelledby="search-modal-title">
+         <button class="search-modal-close-btn" onclick="closeSearchModal()" aria-label="Cerrar búsqueda">&times;</button>
+        <h2 id="search-modal-title" class="visually-hidden">Buscar Contenido</h2>
+        <input id="modalSearchInput" type="search" placeholder="Escribe una raza o alimento..." onkeyup="handleModalSearch()" aria-label="Buscar contenido del sitio"/>
+        <div id="modalSearchResults">
+            <p style="text-align: center; padding: var(--spacing-md); color: #888;">Empieza a escribir para ver sugerencias...</p>
+        </div>
+    </div>
+</div>
+
+
+<main>
+    <section class="content active-section" id="inicio">
+        <h2 class="section-title">Razas Populares</h2>
+        <div class="breed-gallery" id="breedGallery">
+            <p class="loading-placeholder">Cargando razas...</p>
+        </div>
+    </section>
+
+    <section class="content" id="alimentos">
+        <h2 class="section-title">Alimentación Canina</h2>
+        <div class="section-content">
+            <p>Una alimentación balanceada es fundamental para la salud y bienestar de tu mascota. Conoce los diferentes tipos de alimentos y sus beneficios para tu perro:</p>
+        </div>
+        <div class="food-gallery" id="foodGallery">
+             <p class="loading-placeholder">Cargando alimentos...</p>
+        </div>
+    </section>
+
+    <section class="content" id="calculadora">
+        <h2 class="section-title">Calculadora de Alimentación</h2>
+        <div class="calculator-container">
+            <div class="calculator-modes" role="tablist" aria-label="Modos de calculadora">
+                <button class="calculator-mode active" onclick="toggleCalculatorMode('simple')" role="tab" aria-selected="true" aria-controls="calculadoraSimple">Simple</button>
+                <button class="calculator-mode" onclick="toggleCalculatorMode('avanzado')" role="tab" aria-selected="false" aria-controls="calculadoraAvanzada">Avanzado</button>
+            </div>
+            <div class="calculator" id="calculadoraSimple" role="tabpanel" aria-labelledby="calculator-mode-simple">
+                <h3 class="visually-hidden">Calculadora Simple</h3>
+                <label for="size">Tamaño:</label>
+                <select id="size" name="size">
+                    <option value="pequeño">Pequeño (1-10 kg)</option>
+                    <option value="mediano">Mediano (10-25 kg)</option>
+                    <option value="grande">Grande (> 25 kg)</option>
+                </select>
+                <label for="age">Edad (años):</label>
+                <input id="age" name="age" max="20" min="0.1" step="0.1" type="number" value="3"/>
+                <label for="weight">Peso (kg):</label>
+                <input id="weight" name="weight" max="100" min="0.5" step="0.1" type="number" value="15"/>
+                <label for="activity">Actividad:</label>
+                <select id="activity" name="activity">
+                    <option value="bajo">Bajo (Casero)</option>
+                    <option selected value="medio">Medio (Paseos)</option>
+                    <option value="alto">Alto (Activo)</option>
+                </select>
+                <button onclick="calcularAlimento('simple')">Calcular Ración Diaria</button>
+                <div id="resultado" class="calculator-result" aria-live="polite"></div>
+                <div class="food-recommendation" id="foodRecommendation"></div>
+            </div>
+            <div class="calculator" id="calculadoraAvanzada" role="tabpanel" aria-labelledby="calculator-mode-avanzado">
+                 <h3 class="visually-hidden">Calculadora Avanzada</h3>
+                <label for="breedSelect">Raza:</label>
+                <select id="breedSelect" name="breedSelect"> </select>
+                <label for="ageAdvanced">Etapa:</label>
+                <select id="ageAdvanced" name="ageAdvanced">
+                    <option value="puppy">Cachorro (&lt;1)</option>
+                    <option selected value="adult">Adulto (1-7)</option>
+                    <option value="senior">Senior (&gt;7)</option>
+                </select>
+                <label for="weightAdvanced">Peso Exacto (kg):</label>
+                <input id="weightAdvanced" name="weightAdvanced" max="100" min="0.5" step="0.1" type="number" value="15"/>
+                <div class="advanced-options">
+                    <h3>Opciones Adicionales</h3>
+                    <label for="sterilized">Esterilizado:</label>
+                    <select id="sterilized" name="sterilized"> <option value="no">No</option> <option value="yes">Sí</option> </select>
+                    <label for="healthIssues">Salud:</label>
+                    <select id="healthIssues" name="healthIssues"> <option value="none">Ninguna</option> <option value="allergies">Alergias</option> <option value="digestive">Digestivo</option> <option value="joints">Articular</option> <option value="kidneys">Renal</option> <option value="overweight">Sobrepeso</option> </select>
+                    <label for="activityDetail">Ejercicio (min/día):</label>
+                    <input id="activityDetail" name="activityDetail" max="180" min="15" step="15" type="range" value="60"/>
+                    <span id="activityValue">60 min</span>
+                </div>
+                <button onclick="calcularAlimento('avanzado')">Calcular Plan Detallado</button>
+                <div id="resultadoAvanzado" class="calculator-result" aria-live="polite"></div>
+                <div class="food-recommendation" id="advancedRecommendation"></div>
+            </div>
+        </div>
+    </section>
+
+    <div id="breed-details-container">
+        </div>
+
+    <div class="lightbox" id="lightbox" onclick="if(event.target === this) closeLightbox();">
+        <button class="lightbox-close" onclick="closeLightbox()" aria-label="Cerrar imagen">&times;</button>
+        <img class="lightbox-content" id="lightbox-img" src="" alt="Imagen ampliada"/>
+    </div>
+
+    <div class="modal" id="modal-acercade" onclick="if(event.target === this) closeModal('modal-acercade');">
+        <div class="modal-content" role="dialog" aria-labelledby="modal-acercade-title" aria-modal="true">
+            <button class="modal-close-btn" onclick="closeModal('modal-acercade')" aria-label="Cerrar">&times;</button>
+            <h2 id="modal-acercade-title">Acerca de Nosotros</h2>
+            <p>Bienvenidos a <strong>Raz DOG liment</strong>...</p> </div>
+    </div>
+    <div class="modal" id="modal-contacto" onclick="if(event.target === this) closeModal('modal-contacto');">
+        <div class="modal-content" role="dialog" aria-labelledby="modal-contacto-title" aria-modal="true">
+            <button class="modal-close-btn" onclick="closeModal('modal-contacto')" aria-label="Cerrar">&times;</button>
+            <h2 id="modal-contacto-title">Contacto</h2>
+             <p>¡Estamos aquí para ayudarte!...</p>
+             <div class="footer-contact-info" id="modalContactMethods" style="margin-top: var(--spacing-md);"></div>
+        </div>
+    </div>
+    <div class="modal" id="modal-privacy" onclick="if(event.target === this) closeModal('modal-privacy');">
+        <div class="modal-content" role="dialog" aria-labelledby="modal-privacy-title" aria-modal="true">
+            <button class="modal-close-btn" onclick="closeModal('modal-privacy')" aria-label="Cerrar">&times;</button>
+            <h2 id="modal-privacy-title">Política de Privacidad</h2>
+            <p><strong>Última actualización:</strong> <span class="legal-date">...</span></p>
+            <p>En Raz DOG liment, valoramos tu privacidad...</p>
+            <h3>Información que Recopilamos</h3> <p>No recopilamos...</p> <ul><li><strong>Datos de la Calculadora:</strong> ...<strong>Estos datos no se almacenan...</strong></li><li><strong>Cookies:</strong> ...No utilizamos cookies de seguimiento...</li><li><strong>Datos de Navegación Anónimos:</strong> ...</li></ul>
+            <h3>Uso de la Información</h3> <p>La información recopilada se usa exclusivamente para...</p> <ul><li>Proporcionar los cálculos...</li><li>Mejorar la funcionalidad...</li><li>Gestionar el consentimiento...</li></ul>
+            <h3>Compartir Información</h3> <p>No vendemos, alquilamos ni compartimos...</p>
+            <h3>Contenido de Terceros</h3> <p>Utilizamos imágenes de Unsplash...</p>
+            <h3>Seguridad</h3> <p>Aunque no almacenamos...</p>
+            <h3>Tus Derechos</h3> <p>Dado que no almacenamos...</p>
+            <h3>Cambios a esta Política</h3> <p>Podemos actualizar...</p>
+            <h3>Contacto</h3> <p>Si tienes preguntas...</p>
+        </div>
+    </div>
+     <div class="modal" id="modal-terms" onclick="if(event.target === this) closeModal('modal-terms');">
+        <div class="modal-content" role="dialog" aria-labelledby="modal-terms-title" aria-modal="true">
+            <button class="modal-close-btn" onclick="closeModal('modal-terms')" aria-label="Cerrar">&times;</button>
+            <h2 id="modal-terms-title">Términos de Servicio</h2>
+            <p><strong>Última actualización:</strong> <span class="legal-date">...</span></p>
+            <p>Bienvenido a Raz DOG liment...</p>
+            <h3>Uso del Sitio</h3> <p>Este sitio web... se proporcionan únicamente con fines informativos...</p> <ul><li>La información... es una <strong>estimación</strong>...</li><li><strong>Consulta siempre a tu veterinario</strong>...</li><li>Te comprometes a no utilizar...</li></ul>
+            <h3>Propiedad Intelectual</h3> <p>El contenido original...</p>
+            <h3>Exclusión de Garantías</h3> <p>El contenido... se proporciona "tal cual"...</p>
+            <h3>Limitación de Responsabilidad</h3> <p>En ningún caso Raz DOG liment será responsable...</p>
+            <h3>Enlaces a Terceros</h3> <p>Este sitio puede contener enlaces...</p>
+            <h3>Modificaciones a los Términos</h3> <p>Nos reservamos el derecho...</p>
+            <h3>Ley Aplicable</h3> <p>Estos términos se regirán...</p>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    <div class="footer-container">
+        <div class="footer-section">
+            <h3>Acerca de</h3>
+            <button class="footer-modal-button" onclick="openModal('modal-acercade')">Leer Más</button>
+        </div>
+        <div class="footer-section">
+             <h3>Contacto</h3>
+             <button class="footer-modal-button" onclick="openModal('modal-contacto'); generateModalContactMethods();">Ver Contacto</button>
+        </div>
+        <div class="footer-section">
+            <h3>Enlaces Rápidos</h3>
+            <ul id="footer-quick-links"> </ul>
+        </div>
+    </div>
+    <div class="footer-legal">
+         &copy; <span id="currentYear"></span> Raz DOG liment. Todos los derechos reservados. |
+         <button class="link-style" onclick="openModal('modal-privacy')">Privacidad</button> |
+         <button class="link-style" onclick="openModal('modal-terms')">Términos</button>
+    </div>
+</footer>
+
+<div id="cookieConsentBanner">
+    <p>Usamos cookies esenciales para recordar tus preferencias. Al seguir navegando, aceptas su uso. Ver <button class="link-style" onclick="openModal('modal-privacy')">Política de Privacidad</button>.</p>
+    <button onclick="acceptCookies()">Aceptar</button>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
+<script>
+// ====================================
+// DATA (Breeds, Foods, Contacts, etc.)
+// ====================================
+
+// Dog Breeds Data Array
+// Este es el array principal donde se guarda la información de cada raza.
+// Para añadir una RAZA nueva, copia un BLOQUE COMPLETO de datos de raza
+// (desde '{' hasta '},') y pégalo DENTRO de este array [...],
+// justo antes del corchete de cierre final '];'.
+//
+// ¡RECUERDA LA COMA! Cada bloque de raza, EXCEPTO el ÚLTIMO en la lista, debe ir seguido de una coma ','.
+// Ejemplo de un bloque de raza para copiar y adaptar:
+/*
+     {
+         id: "nuevo-id-raza", // Usa minúsculas y guiones (ej: "golden-retriever") - ¡Debe ser único!
+         name: "Nombre Completo de la Raza", // Nombre como se mostrará (ej: "Golden Retriever")
+         description: "Una descripción corta para la tarjeta principal (ej: Amigable y juguetón...)", // Descripción breve
+         image: "URL_DE_LA_IMAGEN_PRINCIPAL", // URL de la imagen para la tarjeta y la página de detalle (ej: https://...)
+         fullDescription: "Descripción detallada y larga sobre la historia, temperamento, etc. de la raza.", // Párrafo completo
+         gallery: [
+             "URL_IMAGEN_GALERIA_1", // URL de una imagen para la galería (opcional)
+             "URL_IMAGEN_GALERIA_2"
+             // ... más URLs separadas por comas
+         ], // Si no tienes más imágenes, déjalo así: []
+         characteristics: {
+             hair: "Tipo de pelaje y colores comunes (ej: Corto, denso...)",
+             size: "Tamaño y peso aproximado (ej: Grande (55-62 cm, 25-36 kg)).",
+             temperament: "Características de comportamiento (ej: Amigable, extrovertido...)",
+             food: "Cantidad aproximada de comida diaria (ej: Aprox. 300-450g/día).",
+             exercise: "Nivel de ejercicio necesario (ej: Alto. Necesita al menos 60 min...)"
+         },
+         lifespan: "Esperanza de vida (ej: 10-12 años)",
+         foodRecommendations: [
+             "Nombre exacto de un alimento recomendado", // Debe coincidir con el 'name' en dogFoods
+             "Otro Nombre de Alimento Recomendado"
+             // ... más nombres de alimentos
+         ], // Si no tienes recomendaciones específicas, déjalo así: []
+         nutritionalAdvice: "Consejo nutricional específico para esta raza (texto corto)."
+     }, // <-- ¡Importante! Coma aquí si vas a añadir OTRA raza después. Si es el último de la lista, BORRA esta coma.
+*/
+let dogBreeds = [
+    {
+        id: "labrador",
+        name: "Labrador Retriever",
+        description: "Amigable y juguetón, ideal para familias activas.",
+        image: "https://images.unsplash.com/photo-1588943211346-0908a1fb0b01?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Labrador Retriever es consistentemente una de las razas más populares a nivel mundial, célebre por su temperamento equilibrado, inteligencia y naturaleza afectuosa. Son perros extremadamente leales, enérgicos y sociables, lo que los convierte en compañeros ideales para familias con niños y otros animales. Originarios de Terranova, fueron criados para ayudar a los pescadores recuperando redes y peces, lo que explica su amor innato por el agua y sus habilidades de natación. Son fáciles de entrenar y destacan en diversas actividades caninas, incluyendo obediencia, agilidad y trabajo como perros de asistencia.",
+        gallery: [
+            "https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+            "https://images.unsplash.com/photo-1591160690555-5debfba289f0?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+            "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+            "https://images.unsplash.com/photo-1520087619250-584c0cbd35e8?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+            // Adding generic user-provided images to Labrador gallery
+            "https://i.ibb.co/DDDyvMXs/dog-1726931-640.jpg",
+            "https://i.ibb.co/7xzk576J/dog-1726930-640.jpg",
+            "https://i.ibb.co/kgL7cJd1/dog-8006807-1280.jpg",
+            "https://i.ibb.co/CrbHXgH/dog-4936814-640.jpg",
+            "https://i.ibb.co/Z1b6FPdB/ai-generated-9437067-640.webp", // Appears twice in user list
+            "https://i.ibb.co/p6V7TD9m/dog-5976489-640.jpg", // Appears twice in user list
+            "https://i.ibb.co/hxC1zT2Q/dog-706958-640.jpg" // Appears twice in user list
+        ],
+        characteristics: {
+            hair: "Corto, denso y resistente al agua. Colores: negro, chocolate, amarillo.",
+            size: "Mediano a grande (55-62 cm altura, 25-36 kg peso).",
+            temperament: "Amigable, extrovertido, dócil, inteligente, bueno con niños.",
+            food: "Aprox. 300-450g/día (depende de actividad y comida específica).",
+            exercise: "Alto. Necesita al menos 60 min de ejercicio vigoroso diario."
+        },
+        lifespan: "10-12 años",
+        foodRecommendations: ["Carne de Pollo", "Croquetas Premium", "Pescado"],
+        nutritionalAdvice: "Propensos a la obesidad; controla las porciones y evita sobrealimentar. Necesitan dietas ricas en proteínas si son muy activos."
+    },
+    {
+        id: "bulldog",
+        name: "Bulldog Inglés",
+        description: "Calmado, afectuoso y de aspecto distintivo.",
+        image: "https://i.ibb.co/Gq2rKLk/bulldog-7476727-640.jpg", // Updated with user provided image
+        fullDescription: "El Bulldog Inglés es inconfundible por su complexión robusta, cabeza grande y hocico corto (braquicefálico). A pesar de su pasado en peleas, hoy es un perro de compañía excepcionalmente dócil, leal y afectuoso. Son conocidos por su naturaleza tranquila y algo perezosa, adaptándose bien a la vida en apartamentos. Requieren ejercicio moderado para evitar el sobrepeso, pero son sensibles al calor extremo debido a su estructura facial. Su pelaje corto es fácil de cuidar, pero las arrugas faciales necesitan limpieza regular para prevenir infecciones.",
+        gallery: [
+            "https://images.unsplash.com/photo-1521907236370-15f66e7f8aca?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+            "https://images.unsplash.com/photo-1517849325389-7d42fff4e3a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+            "https://images.unsplash.com/photo-1611611158876-41699b77a059?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+            "https://images.unsplash.com/photo-1596492784531-6e6eb5ea9de1?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+            // Adding user provided image to gallery
+            "https://i.ibb.co/ymTmgr84/english-bulldog-5422018-1280.jpg"
+        ],
+        characteristics: {
+            hair: "Corto, liso y fino. Colores: atigrado, blanco, rojo, beige (con o sin máscaras).",
+            size: "Mediano (35-40 cm altura, 20-25 kg peso).",
+            temperament: "Dócil, tranquilo, afectuoso, valiente, algo terco.",
+            food: "Aprox. 250-350g/día. Propenso a gases; dietas digestibles.",
+            exercise: "Moderado. Paseos cortos; evitar calor intenso."
+        },
+        lifespan: "8-10 años",
+        foodRecommendations: ["Hígado", "Croquetas Premium", "Alimento Húmedo"],
+        nutritionalAdvice: "Comidas pequeñas y frecuentes ayudan con la respiración y digestión. Croquetas adaptadas a mandíbulas braquicefálicas son útiles."
+    },
+    {
+        id: "pastor-aleman",
+        name: "Pastor Alemán",
+        description: "Leal, inteligente, versátil y excelente guardián.",
+        image: "https://i.ibb.co/PZK6C5xd/german-shepherd-4889095-640.jpg", // Updated with user provided image
+        fullDescription: "El Pastor Alemán es una raza admirada por su inteligencia, lealtad y versatilidad. Criado originalmente para pastorear ovejas, su capacidad de aprendizaje y disposición al trabajo lo han convertido en una opción preferida para roles policiales, militares, de búsqueda y rescate, y como perro de asistencia. Son protectores naturales de su familia, mostrando una devoción inquebrantable. Requieren una socialización temprana y un entrenamiento consistente basado en refuerzo positivo. Su alta energía exige ejercicio físico y mental diario para mantenerse equilibrados y felices.",
+        gallery: [
+            "https://images.unsplash.com/photo-1553882809-a4f57e59501d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+            "https://images.unsplash.com/photo-1594118319842-b72a509f6eff?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+            "https://images.unsplash.com/photo-1596492931428-3edf8fd306f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+            "https://images.unsplash.com/photo-1515722467270-dfefadd22f5d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70"
+        ],
+        characteristics: {
+            hair: "Doble capa, pelo exterior denso y recto. Colores comunes: negro y fuego, sable, negro.",
+            size: "Grande (55-65 cm altura, 22-40 kg peso).",
+            temperament: "Confiado, leal, inteligente, protector, requiere socialización.",
+            food: "Aprox. 400-550g/día. Dietas para razas grandes y activas.",
+            exercise: "Muy Alto. Necesita estimulación física y mental diaria."
+        },
+        lifespan: "9-13 años",
+        foodRecommendations: ["Carne de Res", "Croquetas Premium"],
+        nutritionalAdvice: "Pueden ser propensos a displasia de cadera y problemas digestivos. Considera alimentos con glucosamina y condroitina y fórmulas para digestión sensible."
+    },
+    {
+        id: "beagle",
+        name: "Beagle",
+        description: "Alegre, curioso y guiado por su olfato.",
+        image: "https://i.ibb.co/xt4nwW6z/beagle-5392662-640.jpg", // Updated with user provided image
+        fullDescription: "El Beagle es un perro sabueso compacto y enérgico, conocido por su increíble sentido del olfato y su naturaleza amigable y curiosa. Criados para cazar en jaurías, disfrutan de la compañía de humanos y otros perros. Suelen ser vocales (ladridos, aullidos). Son inteligentes pero pueden ser tercos para entrenar, a menudo distraídos por olores interesantes. Necesitan ejercicio regular para quemar energía y evitar el aburrimiento y sobrepeso.",
+        gallery: ["https://images.unsplash.com/photo-1566750249242-b892b8a69386?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70", "https://images.unsplash.com/photo-1609199041047-90116461c6c3?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+         // Adding user provided image to gallery
+         "https://i.ibb.co/FqmPY9Q2/beagle-7126258-640.jpg"
+        ],
+        characteristics: { hair: "Corto, denso. Colores variados, a menudo tricolor.", size: "Pequeño/Mediano (33-41 cm altura, 9-11 kg peso).", temperament: "Alegre, curioso, amigable, decidido, algo terco.", food: "Aprox. 200-300g/día.", exercise: "Alto. Requiere paseos largos y estimulación mental." },
+        lifespan: "12-15 años",
+        foodRecommendations: ["Carne de Pollo", "Croquetas Premium"],
+        nutritionalAdvice: "Propensos al sobrepeso; controlar ingesta. Comederos lentos pueden ayudar. Dietas que soporten articulaciones por su actividad."
+    },
+    {
+        id: "golden-retriever",
+        name: "Golden Retriever",
+        description: "Cariñoso, inteligente y paciente.",
+        image: "https://i.ibb.co/Cp1RR80Y/dog-golden-retriever-2659096-640.jpg", // Updated with user provided image
+        fullDescription: "El Golden Retriever es famoso por su carácter amigable, confiable e inteligente. Son excelentes perros familiares, pacientes con los niños y deseosos de complacer. Les encanta jugar, especialmente buscar objetos (retrieving), y nadar. Su hermoso pelaje dorado requiere cepillado regular. Necesitan ejercicio diario y compañía humana para ser felices.",
+        gallery: ["https://images.unsplash.com/photo-1591160690555-5debfba289f0?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70", "https://images.unsplash.com/photo-1548199973-03cce0fd8f88?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70", "https://images.unsplash.com/photo-1598536547253-40d95282375b?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70"],
+        characteristics: { hair: "Largo, denso y resistente al agua. Color dorado.", size: "Grande (55-61 cm altura, 25-34 kg peso).", temperament: "Amigable, confiable, gentil, inteligente, paciente.", food: "Aprox. 300-450g/día.", exercise: "Alto. Requiere juego y ejercicio diario." },
+        lifespan: "10-12 años",
+        foodRecommendations: ["Carne de Pollo", "Carne de Res", "Pescado"],
+        nutritionalAdvice: "Omega-3 para piel y pelaje. Controlar peso. Pueden tener problemas articulares."
+    },
+    {
+        id: "yorkshire",
+        name: "Yorkshire Terrier",
+        description: "Pequeño tamaño, gran personalidad.",
+        image: "https://images.unsplash.com/photo-1591769225440-811ad7d6eab3?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Yorkshire Terrier, o 'Yorkie', es un terrier pequeño pero lleno de espíritu y valentía. Tienen un característico pelaje largo, fino y sedoso que requiere bastante mantenimiento. Son perros de compañía leales y afectuosos, pero también pueden ser vocales y protectores de su territorio. A pesar de su tamaño, necesitan ejercicio diario y estimulación mental.",
+        gallery: ["https://images.unsplash.com/photo-1600306003946-a84f7b0a775a?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70", "https://images.unsplash.com/photo-159543370780a-0c2917c6c20b?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70"],
+        characteristics: { hair: "Largo, fino, sedoso. Color azul acero y fuego.", size: "Toy (18-20 cm altura, 2-3 kg peso).", temperament: "Valiente, enérgico, leal, inteligente, a veces terco.", food: "Aprox. 50-150g/día.", exercise: "Moderado. Paseos cortos y juego interior." },
+        lifespan: "12-15 años",
+        foodRecommendations: ["Hígado", "Pescado", "Alimento Húmedo"],
+        nutritionalAdvice: "Comida de alta calidad en porciones pequeñas. Propensos a problemas dentales; higiene bucal importante."
+    },
+    {
+        id: "bulldog-frances",
+        name: "Bulldog Francés",
+        description: "Sociable, juguetón y adaptable.",
+        image: "https://i.ibb.co/BVzXwMK1/french-bulldog-1482630-640.jpg", // Updated with user provided image
+        fullDescription: "El Bulldog Francés es una raza pequeña y musculosa, conocida por sus orejas de murciélago distintivas y su temperamento alegre. Son excelentes perros de compañía, adaptándose bien a la vida en apartamentos y disfrutando de la compañía humana. Son sensibles al calor y al ejercicio excesivo debido a su conformación braquicefálica. Su pelaje corto requiere poco mantenimiento.",
+        gallery: ["https://images.unsplash.com/photo-1535227413001-585d4228446a?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70", "https://images.unsplash.com/photo-1573343623954-f7f7b03b4100?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+         // Adding user provided image to gallery
+         "https://i.ibb.co/Z6XKTszS/french-bulldog-8163486-640.jpg"
+        ],
+        characteristics: { hair: "Corto, liso. Colores atigrado, beige, blanco.", size: "Pequeño (25-35 cm altura, 8-14 kg peso).", temperament: "Sociable, juguetón, adaptable, cariñoso.", food: "Aprox. 150-250g/día.", exercise: "Moderado. Paseos cortos, evitar calor extremo." },
+        lifespan: "10-12 años",
+        foodRecommendations: ["Croquetas Premium", "Alimento Húmedo"],
+        nutritionalAdvice: "Alimentos para razas pequeñas y braquicefálicas. Evitar sobrepeso y golpes de calor. Comidas fraccionadas."
+    },
+    {
+        id: "poodle-standard",
+        name: "Poodle Standard",
+        description: "Muy inteligente, activo y elegante.",
+        image: "https://images.unsplash.com/photo-1629191885289-e9e9f9f9e9f9?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Poodle Standard es una raza muy inteligente y activa, conocida por su pelaje rizado e hipoalergénico. Son fáciles de entrenar y destacan en deportes caninos como la agilidad y obediencia. Requieren ejercicio regular y estimulación mental para evitar el aburrimiento. Su pelaje necesita cepillado y aseo profesional regulares.",
+        gallery: ["https://images.unsplash.com/photo-1578850117075-efc9d1c1f6d9?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70", "https://images.unsplash.com/photo-1603776494735-3c1181876604?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70"],
+        characteristics: { hair: "Rizado, denso, hipoalergénico. Varios colores sólidos.", size: "Grande (45-60 cm altura, 20-32 kg peso).", temperament: "Inteligente, activo, leal, sensible.", food: "Aprox. 250-400g/día.", exercise: "Alto. Necesita mucha actividad física y mental." },
+        lifespan: "12-15 años",
+        foodRecommendations: ["Pescado", "Croquetas Premium"],
+        nutritionalAdvice: "Dietas que soporten la salud del pelaje y la energía. Pueden tener sensibilidades digestivas. Controlar porciones."
+    },
+    {
+        id: "pug",
+        name: "Pug",
+        description: "Encantador, travieso y muy sociable.",
+        image: "https://i.ibb.co/CKccSRQ1/pug-2585365-640.jpg", // Updated with user provided image
+        fullDescription: "El Pug es una raza pequeña con un gran corazón y una personalidad encantadora. Son conocidos por su cara arrugada y ojos saltones. Son perros de compañía devotos y disfrutan de la interacción con sus dueños. Como otras razas braquicefálicas, son sensibles al calor y al ejercicio excesivo. Tienden a ganar peso fácilmente. A pesar de su tamaño, son perros robustos y necesitan cuidado con sus pliegues faciales y sus ojos.",
+        gallery: [
+            "https://images.unsplash.com/photo-1516019033801-3cd38cfc9087?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+            "https://images.unsplash.com/photo-1588943211346-09081fb0b01?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70", // Changed duplicate image
+            "https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70"
+        ],
+        characteristics: {
+            hair: "Corto, liso y brillante. Colores beige, negro.",
+            size: "Pequeño (25-33 cm altura, 6-8 kg peso).",
+            temperament: "Juguetón, sociable, encantador, terco, algo perezoso.",
+            food: "Aprox. 100-200g/día.",
+            exercise: "Moderado. Paseos cortos; evitar calor y humedad."
+        },
+        lifespan: "12-15 años",
+        foodRecommendations: ["Alimento Húmedo", "Croquetas Premium"],
+        nutritionalAdvice: "Controlar estrictamente las porciones para evitar la obesidad. Usar comederos lentos. Alimentos adaptados para razas braquicefálicas."
+    },
+    {
+        id: "boxer",
+        name: "Boxer",
+        description: "Enérgico, leal y divertido.",
+        image: "https://images.unsplash.com/photo-1617894180457-548b62d5b9c5?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Boxer es una raza mediana a grande conocida por su energía, lealtad y naturaleza juguetona. Son buenos con los niños y forman fuertes vínculos con sus familias. Son perros activos que necesitan ejercicio regular y estimulación mental para mantenerse felices y equilibrados. Son propensos a algunos problemas de salud como cáncer y problemas cardíacos, por lo que una dieta adecuada y chequeos veterinarios son importantes.",
+        gallery: [
+            "https://images.unsplash.com/photo-1572053693950-98e34685279f?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+            "https://images.unsplash.com/photo-1543466835-4578f97b9fda?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70"
+        ],
+        characteristics: {
+            hair: "Corto, liso y pegado al cuerpo. Colores beige, atigrado.",
+            size: "Mediano/Grande (53-63 cm altura, 25-32 kg peso).",
+            temperament: "Enérgico, leal, juguetón, valiente, paciente con niños.",
+            food: "Aprox. 300-450g/día.",
+            exercise: "Alto. Necesita ejercicio intenso diario."
+        },
+        lifespan: "10-12 años",
+        foodRecommendations: ["Carne de Res", "Croquetas Premium"],
+        nutritionalAdvice: "Alimentos de alta calidad que soporten la energía y la salud cardíaca. Evitar el ejercicio extenuante en climas cálidos. Pueden beneficiarse de alimentos digestibles."
+    },
+    {
+        id: "dachshund",
+        name: "Dachshund (Teckel)",
+        description: "Curioso, valiente y tenaz.",
+        image: "https://images.unsplash.com/photo-1603609495904-8699b7b1b391?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Dachshund, o Teckel (perro salchicha), es una raza pequeña con un cuerpo largo y patas cortas. Son conocidos por su valentía, curiosidad y, a veces, terquedad. Fueron criados para cazar tejones y otros animales de madriguera. Requieren cuidado especial para proteger su columna vertebral, que es propensa a problemas (IVDD). Necesitan ejercicio moderado y un manejo cuidadoso para evitar lesiones.",
+        gallery: [
+            "https://images.unsplash.com/photo-1580397434342-530292b49074?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+            "https://images.unsplash.com/photo-1504826062361-bb576058437c?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70"
+        ],
+        characteristics: {
+            hair: "Puede ser corto, largo o de pelo duro. Varios colores.",
+            size: "Pequeño (20-23 cm altura - Standard, 13-18 cm - Miniatura; peso varía).",
+            temperament: "Valiente, tenaz, curioso, animado, a veces terco.",
+            food: "Aprox. 100-200g/día.",
+            exercise: "Moderado. Varios paseos cortos al día."
+        },
+        lifespan: "12-16 años",
+        foodRecommendations: ["Croquetas Premium", "Hígado"],
+        nutritionalAdvice: "Mantener un peso saludable es crucial para proteger la columna vertebral. Alimentos con soporte articular (glucosamina y condroitina) pueden ser beneficiosos."
+    },
+    {
+        id: "gran-danes",
+        name: "Gran Danés",
+        description: "Gentil gigante, noble y afectuoso.",
+        image: "https://images.unsplash.com/photo-1604648909859-e3df1943e7f3?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Gran Danés es una de las razas más grandes, pero también una de las más gentiles y afectuosas. Son conocidos como 'gigantes gentiles'. Son leales y buenos con los niños. Requieren socialización temprana debido a su tamaño. Son propensos a problemas de salud relacionados con su tamaño, como la torsión gástrica y problemas cardíacos.",
+        gallery: ["https://images.unsplash.com/photo-159785484701-9025c134778c?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70"],
+        characteristics: { hair: "Corto, liso...", size: "Muy Grande (71-81 cm altura, 45-90 kg peso).", temperament: "Gentil, afectuoso, paciente, noble.", food: "Aprox. 500-800g+.", exercise: "Moderado. Evitar ejercicio intenso en cachorros." },
+        lifespan: "6-8 años",
+        foodRecommendations: ["Carne de Res", "Croquetas Premium"],
+        nutritionalAdvice: "Fórmulas para razas gigantes. Comidas pequeñas y elevadas para reducir riesgo de torsión gástrica. Suplementos articulares."
+    },
+    {
+        id: "chihuahua",
+        name: "Chihuahua",
+        description: "Pequeño tamaño, gran personalidad y alerta.",
+        image: "https://images.unsplash.com/photo-1601758125873-9a384672c8b8?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Chihuahua es la raza de perro más pequeña del mundo, pero compensa su tamaño con una personalidad audaz y alerta. Son leales a sus dueños y pueden ser algo protectores. Son adecuados para la vida en apartamentos, pero disfrutan del ejercicio diario. Vienen en variedades de pelo corto y largo.",
+        gallery: ["https://images.unsplash.com/photo-1560801727-92a64f502588?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70"],
+        characteristics: { hair: "Corto o largo...", size: "Toy (15-23 cm altura, 1.5-3 kg peso).", temperament: "Valiente, alerta, vivaz, leal.", food: "Aprox. 50-100g.", exercise: "Bajo/Moderado. Juegos en interior, paseos cortos." },
+        lifespan: "14-16 años",
+        foodRecommendations: ["Alimento Húmedo", "Croquetas Premium"],
+        nutritionalAdvice: "Comida muy pequeña y adaptada a mandíbulas diminutas. Vigilancia dental."
+    },
+    {
+        id: "siberian-husky",
+        name: "Siberian Husky",
+        description: "Enérgico, resistente y amigable con un instinto de manada fuerte.",
+        image: "https://images.unsplash.com/photo-1568572816566-4c6a1f3a848b?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Siberian Husky es una raza de trabajo de tamaño mediano, originaria del noreste de Asia. Fueron criados por el pueblo Chukchi para tirar de trineos a largas distancias en condiciones extremas. Son conocidos por su resistencia, velocidad y su llamativo aspecto, a menudo con ojos azules o de colores diferentes. Tienen un carácter amigable, no son agresivos, y disfrutan de la compañía de otros perros y humanos. Son perros muy enérgicos que necesitan mucho ejercicio y estimulación para no aburrirse o volverse destructivos. Su pelaje doble requiere cepillado regular.",
+        gallery: [
+            "https://images.unsplash.com/photo-1513010497431-234c81b37792?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+            "https://images.unsplash.com/photo-1523225061020-9324124f883e?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70"
+        ],
+        characteristics: {
+            hair: "Doble capa, espeso y de longitud media. Muda estacionalmente.",
+            size: "Mediano (50-60 cm altura, 16-27 kg peso).",
+            temperament: "Amigable, enérgico, juguetón, algo travieso, independiente.",
+            food: "Aprox. 250-400g/día. Eficientes en el uso de energía.",
+            exercise: "Muy Alto. Necesita varias horas de ejercicio intenso diario."
+        },
+        lifespan: "12-15 años",
+        foodRecommendations: ["Carne de Res", "Croquetas Premium"],
+        nutritionalAdvice: "Dietas ricas en proteínas para su nivel de actividad. Pueden ser sensibles a ciertos granos."
+    },
+    {
+        id: "rottweiler",
+        name: "Rottweiler",
+        description: "Seguro de sí mismo, leal y protector con su familia.",
+        image: "https://images.unsplash.com/photo-1585864389572-b6b5c3b01e72?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Rottweiler es una raza robusta y poderosa, conocida por su fuerza y su instinto de protección. Originalmente utilizados para arrear ganado y tirar de carros, hoy son excelentes perros guardianes y de familia. Son leales, cariñosos y seguros de sí mismos con sus dueños, pero pueden ser reservados con extraños. Requieren una socialización temprana, entrenamiento firme y consistente, y ejercicio regular. Una crianza adecuada es crucial para su temperamento.",
+        gallery: [
+            "https://images.unsplash.com/photo-1626572937790-fe3f632a1a4a?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70", // Changed duplicate image
+            "https://images.unsplash.com/photo-1571637366216-b735331f3175?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70"
+        ],
+        characteristics: {
+            hair: "Corto, denso. Color negro con marcas fuego.",
+            size: "Grande (56-68 cm altura, 35-60 kg peso).",
+            temperament: "Seguro, leal, protector, tranquilo, algo distante con extraños.",
+            food: "Aprox. 400-600g/día. Dietas para razas grandes.",
+            exercise: "Alto. Necesita ejercicio diario intenso y estimulación mental."
+        },
+        lifespan: "8-10 años",
+        foodRecommendations: ["Carne de Res", "Croquetas Premium"],
+        nutritionalAdvice: "Propensos a problemas articulares y torsión gástrica. Considerar suplementos y comidas elevadas."
+    },
+    {
+        id: "poodle-miniature",
+        name: "Poodle Miniatura",
+        description: "Inteligente, activo y muy adaptable.",
+        image: "https://images.unsplash.com/photo-1547821842-d7d20d06816a?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Poodle Miniatura posee la inteligencia y el encanto del Poodle Standard, pero en un tamaño más manejable. Son muy adaptables a la vida en apartamentos y disfrutan de la compañía humana. Son fáciles de entrenar y disfrutan de actividades como la agilidad. Su pelaje rizado es hipoalergénico, pero requiere cepillado diario y peluquería regular para evitar enredos. Son perros activos que necesitan juego y paseos diarios.",
+        gallery: [
+            "https://images.unsplash.com/photo-1608810830752-c415307e8f1c?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+            "https://images.unsplash.com/photo-159543370780a-0c2917c6c20b?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70"
+        ],
+        characteristics: {
+            hair: "Rizado, denso, hipoalergénico. Varios colores sólidos.",
+            size: "Pequeño (28-35 cm altura, 5-9 kg peso).",
+            temperament: "Inteligente, activo, adaptable, leal.",
+            food: "Aprox. 150-250g/día.",
+            exercise: "Moderado a Alto. Necesita juego y paseos diarios."
+        },
+        lifespan: "12-15 años",
+        foodRecommendations: ["Pescado", "Croquetas Premium", "Alimento Húmedo"],
+        nutritionalAdvice: "Alimentos de alta calidad para la salud del pelaje. Controlar porciones para evitar sobrepeso."
+    },
+    {
+        id: "shih-tzu",
+        name: "Shih Tzu",
+        description: "Perro de compañía cariñoso y vivaz con un pelaje largo.",
+        image: "https://images.unsplash.com/photo-1582977203948-f425600d88a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Shih Tzu es una raza pequeña originaria del Tíbet, criada principalmente como perro de compañía en palacios. Son conocidos por su pelaje largo y lujoso y su temperamento afectuoso y saliente. Disfrutan de la compañía humana y son buenos con los niños y otros animales. A pesar de su pequeño tamaño, son bastante resistentes. Su pelaje requiere un cepillado diario meticuloso para evitar enredos. Necesitan ejercicio moderado, como paseos cortos diarios.",
+        gallery: [
+            "https://images.unsplash.com/photo-1598250275502-2c826a135c38?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+            "https://images.unsplash.com/photo-1600031682705-308952c9267c?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70"
+        ],
+        characteristics: {
+            hair: "Largo, liso o ligeramente ondulado. Requiere mucho aseo.",
+            size: "Toy (20-28 cm altura, 4-7 kg peso).",
+            temperamento: "Afectuoso, saliente, juguetón, algo terco.",
+            food: "Aprox. 100-150g/día.",
+            exercise: "Bajo a Moderado. Paseos cortos diarios."
+        },
+        lifespan: "10-16 años",
+        foodRecommendations: ["Alimento Húmedo", "Croquetas Premium"],
+        nutritionalAdvice: "Alimentos de calidad para la salud del pelaje. Controlar porciones para evitar sobrepeso. Alimentos adaptados a mandíbulas pequeñas."
+    },
+    {
+        id: "braco-aleman-pelo-corto",
+        name: "Braco Alemán de Pelo Corto",
+        description: "Enérgico, versátil perro de caza y compañero activo.",
+        image: "https://images.unsplash.com/photo-1600527218108-53657af0c95d?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Braco Alemán de Pelo Corto es una raza deportiva versátil, criada para la caza polivalente: rastreo, muestra y cobro en tierra y agua. Son perros muy enérgicos, inteligentes y leales a su familia. Necesitan una gran cantidad de ejercicio físico y mental diario, lo que los hace ideales para personas activas o cazadores. Son amigables y buenos con los niños si se socializan correctamente. Su pelaje corto es fácil de mantener.",
+        gallery: [
+            "https://images.unsplash.com/photo-1592881019620-0685996ca193?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+            "https://images.unsplash.com/photo-1593046011316-d823f6c9b309?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70"
+        ],
+        characteristics: {
+            hair: "Corto, denso y liso. Colores hígado, hígado y blanco.",
+            size: "Mediano a Grande (58-64 cm altura, 20-32 kg peso).",
+            temperament: "Enérgico, inteligente, entusiasta, leal, amigable.",
+            food: "Aprox. 300-500g/día. Dietas para perros muy activos.",
+            exercise: "Muy Alto. Necesita varias horas de ejercicio intenso diario (correr, nadar)."
+        },
+        lifespan: "10-12 años",
+        foodRecommendations: ["Carne de Res", "Carne de Pollo", "Croquetas Premium"],
+        nutritionalAdvice: "Dietas altas en proteínas y grasas para su alto nivel de actividad. Mantener hidratación."
+    },
+    {
+        id: "doberman-pinscher",
+        name: "Doberman Pinscher",
+        description: "Elegante, alerta, leal y protector.",
+        image: "https://images.unsplash.com/photo-1571881320136-c1e7023a276e?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Doberman Pinscher es conocido por su apariencia elegante y atlética y su temperamento alerta. Originalmente criados como perros guardianes y protectores, son increíblemente leales y forman fuertes vínculos con sus familias. Son muy inteligentes y requieren entrenamiento y socialización tempranos y consistentes. Son perros enérgicos que necesitan ejercicio físico y mental diario. Su pelaje corto es fácil de cuidar.",
+        gallery: [
+            "https://images.unsplash.com/photo-1626572937790-fe3f632a1a4a?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70", // Changed duplicate image
+            "https://images.unsplash.com/photo-1571637366216-b735331f3175?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70"
+        ],
+        characteristics: {
+            hair: "Corto, liso y duro. Colores negro, marrón, azul, beige (con marcas fuego).",
+            size: "Grande (65-70 cm altura, 32-45 kg peso).",
+            temperament: "Alerta, leal, seguro de sí mismo, protector, inteligente.",
+            food: "Aprox. 350-500g/día.",
+            exercise: "Alto. Necesita ejercicio vigoroso y mental diario."
+        },
+        lifespan: "10-12 años",
+        foodRecommendations: ["Carne de Res", "Croquetas Premium"],
+        nutritionalAdvice: "Pueden ser propensos a problemas cardíacos y de tiroides. Dietas que soporten la salud cardiovascular y el metabolismo."
+    },
+    {
+        id: "australian-shepherd",
+        name: "Australian Shepherd (Pastor Australiano)",
+        description: "Inteligente, enérgico y trabajador, con un fuerte instinto de pastoreo.",
+        image: "https://images.unsplash.com/photo-1510552211567-262a58ab1c1a?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "A pesar de su nombre, el Australian Shepherd se desarrolló en Estados Unidos, no en Australia. Fueron criados para pastorear ganado y son conocidos por su inteligencia excepcional, energía ilimitada y agilidad. Son perros muy leales y protectores con su familia, pero necesitan un trabajo o actividad para mantenerse ocupados y felices. Suelen tener ojos de colores variados y un pelaje de longitud media que requiere cepillado regular. No son adecuados para vidas sedentarias.",
+        gallery: [
+            "https://images.unsplash.com/photo-1596162208560-288d84e209e3?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+            "https://images.unsplash.com/photo-1533484097682-a8b940a42bfd?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70"
+        ],
+        characteristics: {
+            hair: "Longitud media, liso o ligeramente ondulado. Colores merlé azul, merlé rojo, negro, rojo (con o sin blanco/fuego).",
+            size: "Mediano (46-58 cm altura, 18-29 kg peso).",
+            temperament: "Inteligente, enérgico, trabajador, leal, reservado con extraños.",
+            food: "Aprox. 250-400g/día. Dietas para perros activos.",
+            exercise: "Muy Alto. Necesita ejercicio intenso y estimulación mental diario."
+        },
+        lifespan: "12-15 años",
+        foodRecommendations: ["Carne de Pollo", "Carne de Res", "Croquetas Premium"],
+        nutritionalAdvice: "Dietas de alta energía y calidad. Suplementos para articulaciones por su actividad."
+    },
+    {
+        id: "cavalier-king-charles",
+        name: "Cavalier King Charles Spaniel",
+        description: "Afectuoso, gentil y muy buen compañero.",
+        image: "https://images.unsplash.com/photo-1598547555184-eb1143220c2b?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Cavalier King Charles Spaniel es una raza pequeña conocida por su temperamento dulce y gentil. Son excelentes perros de compañía y disfrutan de estar cerca de sus dueños. Se adaptan bien a la vida en apartamentos, pero disfrutan de paseos diarios. Su pelaje sedoso requiere cepillado regular. Son propensos a ciertos problemas de salud, incluyendo problemas cardíacos y neurológicos, por lo que la atención veterinaria regular es importante.",
+        gallery: [
+            "https://images.unsplash.com/photo-1598256945036-d218a6df36e8?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70"
+        ],
+        characteristics: {
+            hair: "Largo, sedoso, ligeramente ondulado.",
+            size: "Pequeño (30-33 cm altura, 5-8 kg peso).",
+            temperament: "Afectuoso, gentil, amigable, adaptable.",
+            food: "Aprox. 100-150g/día.",
+            exercise: "Moderado. Paseos diarios y juego."
+        },
+        lifespan: "9-14 años",
+        foodRecommendations: ["Alimento Húmedo", "Croquetas Premium"],
+        nutritionalAdvice: "Controlar estrictamente las porciones. Alimentos que soporten la salud cardíaca."
+    },
+    {
+        id: "border-collie",
+        name: "Border Collie",
+        description: "La raza de perro más inteligente, muy enérgico y trabajador.",
+        image: "https://images.unsplash.com/photo-1555795175-7446f4399165?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Border Collie es considerado una de las razas de perros más inteligentes del mundo. Son perros pastores excepcionales, conocidos por su intenso 'ojo' para mover ovejas. Tienen una energía y resistencia enormes y necesitan estar constantemente activos, tanto física como mentalmente. Son ideales para personas que practican deportes caninos (como agilidad) o tienen trabajo para ellos. Requieren socialización temprana y entrenamiento consistente. No son adecuados para hogares sedentarios.",
+        gallery: [
+            "https://images.unsplash.com/photo-1547448094-da5646949a3b?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70",
+            "https://images.unsplash.com/photo-1589721846134-3b4240921238?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70"
+        ],
+        characteristics: {
+            hair: "Puede ser de longitud media o corto, denso.",
+            size: "Mediano (46-56 cm altura, 14-20 kg peso).",
+            temperament: "Inteligente, enérgico, trabajador, alerta, sensible.",
+            food: "Aprox. 250-400g/día. Dietas para perros muy activos.",
+            exercise: "Extremo. Necesita horas de ejercicio intenso y mental diario."
+        },
+        lifespan: "12-15 años",
+        foodRecommendations: ["Carne de Pollo", "Carne de Res", "Croquetas Premium"],
+        nutritionalAdvice: "Dietas de alta energía. Alimentos que soporten la salud cerebral y articular."
+    },
+    {
+        id: "san-bernardo",
+        name: "San Bernardo",
+        description: "Gentil, amigable y un excelente perro de rescate.",
+        image: "https://images.unsplash.com/photo-1588943211346-09081fb0b01?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image (Placeholder, replace if needed)
+        fullDescription: "El San Bernardo es una raza gigante, originalmente criada para rescates en los Alpes suizos. Son conocidos por su temperamento gentil, amigable y paciente, lo que los convierte en buenos perros familiares. Su tamaño requiere socialización y entrenamiento tempranos. Necesitan ejercicio moderado y son sensibles al calor debido a su grueso pelaje. Son propensos a problemas de salud relacionados con su tamaño, como displasia y problemas cardíacos.",
+        gallery: [
+            "https://images.unsplash.com/photo-1583337130417-33461b3beee?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70", // Existing image (Placeholder, replace if needed)
+            "https://images.unsplash.com/photo-1505628346881-b72b27e84530?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=70"
+        ],
+        characteristics: {
+            hair: "Corto o largo, denso. Colores rojo con blanco, atigrado con blanco.",
+            size: "Gigante (65-90 cm altura, 64-120 kg peso).",
+            temperament: "Gentil, amigable, paciente, leal.",
+            food: "Aprox. 600-1000g+/día. Dietas para razas gigantes de crecimiento lento.",
+            exercise: "Moderado. Paseos diarios, evitar calor y ejercicio intenso en cachorros."
+        },
+        lifespan: "8-10 años",
+        foodRecommendations: ["Carne de Res", "Croquetas Premium"],
+        nutritionalAdvice: "Fórmulas para razas gigantes para controlar el crecimiento y prevenir problemas articulares. Comidas elevadas."
+    },
+    {
+        id: "american-pit-bull-terrier",
+        name: "American Pit Bull Terrier",
+        description: "Inteligente, leal y valiente, a menudo descrito como cariñoso con su familia.",
+        image: "https://images.unsplash.com/photo-1585864389572-b6b5c3b01e72?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image (Placeholder, replace if needed)
+        fullDescription: "El American Pit Bull Terrier es conocido por su fuerza, confianza y entusiasmo por la vida. A pesar de la percepción pública, con la socialización y el entrenamiento adecuados, son perros amigables, leales y cariñosos. Son muy enérgicos y necesitan mucho ejercicio y estimulación mental. Se destacan en deportes caninos y son compañeros dedicados.",
+        gallery: [], // Add gallery URLs if available
+        characteristics: {
+            hair: "Corto, liso y brillante.",
+            size: "Mediano (43-53 cm altura, 13-27 kg peso).",
+            temperament: "Inteligente, payaso, obediente, amigable, leal, cariñoso, valiente.",
+            food: "Aprox. 200-350g/día.",
+            exercise: "Alto. Necesita ejercicio vigoroso diario."
+        },
+        lifespan: "10-12 años",
+        foodRecommendations: ["Carne de Res", "Croquetas Premium"],
+        nutritionalAdvice: "Dietas ricas en proteínas para mantener su musculatura. Vigilar la piel por posibles alergias."
+    },
+    {
+        id: "bernese-mountain-dog",
+        name: "Boyero de Berna",
+        description: "Perro de montaña gentil y leal, excelente perro familiar.",
+        image: "https://images.unsplash.com/photo-1517849325389-7d42fff4e3a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image (Placeholder, replace if needed)
+        fullDescription: "El Boyero de Berna es un perro grande y fuerte originario de los Alpes suizos. Fueron utilizados originalmente como perros de granja y tiro. Hoy son apreciados por su temperamento tranquilo, afectuoso y leal. Son muy buenos con los niños y disfrutan participando en actividades familiares. Requieren ejercicio moderado y disfrutan del clima frío. Son propensos a ciertos problemas de salud relacionados con su tamaño.",
+        gallery: [], // Add gallery URLs if available
+        characteristics: {
+            hair: "Largo, sedoso y tricolor.",
+            size: "Grande (58-70 cm altura, 35-50 kg peso).",
+            temperament: "Cariñoso, inteligente, leal, fiel.",
+            food: "Aprox. 350-500g/día.",
+            exercise: "Moderado. Paseos diarios, disfrutan del trabajo ligero."
+        },
+        lifespan: "7-10 años",
+        foodRecommendations: ["Carne de Res", "Croquetas Premium"],
+        nutritionalAdvice: "Fórmulas para razas grandes. Considerar suplementos articulares."
+    },
+    {
+        id: "bichon-frise",
+        name: "Bichón Frisé",
+        description: "Pequeño, alegre y esponjoso perro de compañía.",
+        image: "https://images.unsplash.com/photo-1598250275502-2c826a135c38?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image (Placeholder, replace if needed)
+        fullDescription: "El Bichón Frisé es un perro pequeño y encantador conocido por su pelaje blanco, rizado y que no muda mucho, lo que lo hace popular entre personas con alergias. Son perros muy alegres, juguetones y sociables, lo que los convierte en excelentes compañeros. Se adaptan bien a la vida en apartamentos, pero disfrutan de paseos y juegos diarios. Requieren cepillado y aseo profesional regulares.",
+        gallery: [], // Add gallery URLs if available
+        characteristics: {
+            hair: "Rizado, blanco, hipoalergénico.",
+            size: "Pequeño (23-30 cm altura, 5-8 kg peso).",
+            temperament: "Juguetón, cariñoso, alegre, sensible.",
+            food: "Aprox. 100-150g/día.",
+            exercise: "Moderado. Paseos cortos y juego."
+        },
+        lifespan: "12-15 años",
+        foodRecommendations: ["Alimento Húmedo", "Croquetas Premium"],
+        nutritionalAdvice: "Alimentos de calidad para la salud del pelaje. Vigilancia dental."
+    },
+    {
+        id: "american-cocker-spaniel",
+        name: "Cocker Spaniel Americano",
+        description: "Alegre, sociable y con un pelaje distintivo.",
+        image: "https://images.unsplash.com/photo-1598256945036-d218a6df36e8?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image (Placeholder, replace if needed)
+        fullDescription: "El American Cocker Spaniel es la variedad estadounidense del Cocker Spaniel. Son conocidos por su cabeza redondeada, ojos grandes y expresivos, y su abundante pelaje. Son perros muy amigables, alegres y sociables, lo que los convierte en populares perros de compañía. Originalmente perros de caza, todavía disfrutan de la actividad y el juego. Su pelaje requiere cepillado y aseo regulares.",
+        gallery: [], // Add gallery URLs if available
+        characteristics: {
+            hair: "Largo, sedoso, con abundantes flecos.",
+            size: "Pequeño/Mediano (34-39 cm altura, 10-13 kg peso).",
+            temperamento: "Alegre, extrovertido, apacible, confiado.",
+            food: "Aprox. 150-250g/día.",
+            exercise: "Moderado. Paseos diarios y juego."
+        },
+        lifespan: "10-14 años",
+        foodRecommendations: ["Carne de Pollo", "Croquetas Premium"],
+        nutritionalAdvice: "Vigilar las orejas por infecciones. Controlar el peso."
+    },
+    {
+        id: "pointer",
+        name: "Pointer Inglés",
+        description: "Perro de caza enérgico y noble con instinto de 'muestra' fuerte.",
+        image: "https://images.unsplash.com/photo-1593046011316-d823f6c9b309?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image (Placeholder, replace if needed)
+        fullDescription: "El Pointer Inglés es una raza deportiva elegante y atlética, criada principalmente para la caza de aves. Son famosos por su postura de 'muestra' distintiva cuando localizan presas. Son perros muy enérgicos, inteligentes y leales. Necesitan una gran cantidad de ejercicio diario y espacio para correr. Son amigables y se adaptan bien a la vida familiar siempre que se satisfagan sus necesidades de ejercicio.",
+        gallery: [], // Add gallery URLs if available
+        characteristics: {
+            hair: "Corto, liso y denso.",
+            size: "Grande (61-69 cm altura, 20-34 kg peso).",
+            temperamento: "Enérgico, noble, amigable, leal, apacible.",
+            food: "Aprox. 300-450g/día.",
+            exercise: "Muy Alto. Necesita mucho ejercicio intenso diario."
+        },
+        lifespan: "12-15 años",
+        foodRecommendations: ["Carne de Res", "Carne de Pollo", "Croquetas Premium"],
+        nutritionalAdvice: "Dietas de alta energía para su nivel de actividad. Mantener una hidratación adecuada."
+    },
+    {
+        id: "great-pyrenees",
+        name: "Gran Pirineo",
+        description: "Perro guardián de ganado, tranquilo, paciente y protector.",
+        image: "https://images.unsplash.com/photo-1583337130417-33461b3beee?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image (Placeholder, replace if needed)
+        fullDescription: "El Gran Pirineo es una raza ancestral de perro guardián de ganado, conocida por su pelaje blanco y espeso y su temperamento tranquilo y gentil. Son perros pacientes, afectuosos y devotos con su familia, incluyendo niños y otros animales. Tienen un instinto natural para proteger. Requieren socialización temprana y entrenamiento firme pero amable. Necesitan ejercicio moderado y prefieren climas fríos. Son propensos a problemas de salud relacionados con su tamaño.",
+        gallery: [], // Add gallery URLs if available
+        characteristics: {
+            hair: "Largo, grueso y resistente a la intemperie. Color blanco.",
+            size: "Gigante (64-81 cm altura, 40-57 kg peso).",
+            temperament: "Tranquilo, paciente, gentil, confiado, protector, algo independiente.",
+            food: "Aprox. 400-600g/día.",
+            exercise: "Moderado. Paseos diarios, disfrutan de espacios grandes."
+        },
+        lifespan: "10-12 años",
+        foodRecommendations: ["Carne de Res", "Croquetas Premium"],
+        nutritionalAdvice: "Fórmulas para razas gigantes. Controlar el crecimiento en cachorros. Suplementos articulares."
+    },
+    {
+        id: "shetland-sheepdog",
+        name: "Pastor de las islas Shetland (Sheltie)",
+        description: "Perro pastor inteligente, leal y ágil.",
+        image: "https://images.unsplash.com/photo-1548199973-03cce0fd8f88?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image (Placeholder, replace if needed)
+        fullDescription: "El Shetland Sheepdog, o Sheltie, es una raza pastoril de tamaño pequeño a mediano originaria de las islas Shetland de Escocia. Son perros extremadamente inteligentes, fáciles de entrenar y muy leales a su familia. Son excelentes en deportes caninos como la agilidad y la obediencia. Pueden ser un poco reservados con extraños. Su pelaje doble requiere cepillado regular.",
+        gallery: [], // Add gallery URLs if available
+        characteristics: {
+            hair: "Doble capa, largo y liso. Varios colores.",
+            size: "Pequeño/Mediano (33-41 cm altura, 7-14 kg peso).",
+            temperament: "Inteligente, leal, receptivo, alerta, reservado.",
+            food: "Aprox. 150-250g/día.",
+            exercise: "Alto. Necesita ejercicio y estimulación mental diaria."
+        },
+        lifespan: "12-14 años",
+        foodRecommendations: ["Carne de Pollo", "Croquetas Premium"],
+        nutritionalAdvice: "Controlar porciones para evitar sobrepeso. Alimentos para la salud del pelaje."
+    },
+    {
+        id: "akita-inu",
+        name: "Akita Inu",
+        description: "Perro japonés noble, leal y digno.",
+        image: "https://images.unsplash.com/photo-1558394444-9a23885d357f?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image (Placeholder, replace if needed)
+        fullDescription: "El Akita Inu es una raza grande y poderosa originaria de las regiones montañosas del norte de Japón. Son conocidos por su lealtad inquebrantable, su dignidad y su naturaleza reservada. Pueden ser distantes con extraños y no siempre se llevan bien con otros perros. Requieren socialización temprana y un dueño experimentado con un entrenamiento firme y consistente. Necesitan ejercicio moderado.",
+        gallery: [], // Add gallery URLs if available
+        characteristics: {
+            hair: "Doble capa, corto a medio. Varios colores (rojo, sésamo, atigrado, blanco).",
+            size: "Grande (60-70 cm altura, 30-50 kg peso).",
+            temperament: "Fiel, inteligente, impasible, leal, reservado, obstinado.",
+            food: "Aprox. 300-450g/día.",
+            exercise: "Moderado a Alto. Paseos diarios y tiempo de juego."
+        },
+        lifespan: "10-12 años",
+        foodRecommendations: ["Carne de Res", "Pescado", "Croquetas Premium"],
+        nutritionalAdvice: "Dietas que soporten la salud de piel y pelaje. Pueden tener sensibilidades."
+    },
+    {
+        id: "cane-corso",
+        name: "Cane Corso",
+        description: "Impresionante guardián italiano, inteligente y protector.",
+        image: "https://images.unsplash.com/photo-1585864389572-b6b5c3b01e72?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image (Placeholder, replace if needed)
+        fullDescription: "El Cane Corso es una raza de tipo mastín italiana, conocida por su musculatura, inteligencia y capacidad de protección. Son perros leales y cariñosos con su familia, pero también son guardianes naturales. Requieren socialización temprana, entrenamiento firme y consistente, y un dueño con experiencia. Son perros enérgicos que necesitan ejercicio regular. Son propensos a algunos problemas de salud relacionados con razas grandes.",
+        gallery: [], // Add gallery URLs if available
+        characteristics: {
+            hair: "Corto y duro. Colores negro, gris, atigrado, leonado.",
+            size: "Grande (60-68 cm altura, 40-50 kg peso).",
+            temperament: "Inteligente, estable, apacible, alerta, leal, reservado, intrépido.",
+            food: "Aprox. 400-600g/día.",
+            exercise: "Alto. Necesita ejercicio vigoroso diario."
+        },
+        lifespan: "10-12 años",
+        foodRecommendations: ["Carne de Res", "Croquetas Premium"],
+        nutritionalAdvice: "Fórmulas para razas grandes. Vigilar riesgo de torsión gástrica."
+    },
+    {
+        id: "basset-hound",
+        name: "Basset Hound",
+        description: "Perro sabueso de orejas largas, afable y con un olfato increíble.",
+        image: "https://images.unsplash.com/photo-1505628346881-b72b27e84530?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image (Placeholder, replace if needed)
+        fullDescription: "El Basset Hound es una raza de perro sabueso conocida por sus largas orejas caídas, su cuerpo robusto y sus patas cortas. Son perros afables, tranquilos y amigables, aunque pueden ser algo tercos debido a su fuerte instinto de rastreo. Tienen un sentido del olfato excepcional. Requieren ejercicio moderado para evitar el sobrepeso y cuidado regular de sus orejas y pliegues de piel.",
+        gallery: [], // Add gallery URLs if available
+        characteristics: {
+            hair: "Corto, liso y denso. Varios colores.",
+            size: "Mediano/Pequeño (hasta 38 cm altura, 18-29 kg peso).",
+            temperament: "Afable, cariñoso, tenaz, amigable, devoto, gentil.",
+            food: "Aprox. 200-300g/día.",
+            exercise: "Moderado. Paseos diarios, disfrutan de rastrear."
+        },
+        lifespan: "10-12 años",
+        foodRecommendations: ["Croquetas Premium", "Alimento Húmedo"],
+        nutritionalAdvice: "Propenso al sobrepeso; controlar porciones. Cuidado dental y de orejas."
+    },
+     {
+        id: "maltes",
+        name: "Maltés",
+        description: "Pequeño, gentil y con un pelaje blanco y sedoso.",
+        image: "https://images.unsplash.com/photo-1563078326-f903290f4861?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Maltés es una raza pequeña, conocida por su pelaje largo, blanco y sedoso. Son perros de compañía gentiles, afectuosos y vivaces. Se adaptan bien a la vida en apartamentos. Su pelaje requiere cepillado diario para evitar enredos. Necesitan ejercicio moderado.",
+        gallery: [],
+        characteristics: { hair: "Largo, sedoso, blanco.", size: "Toy (20-25 cm, 3-4 kg).", temperament: "Gentil, afectuoso, vivaz.", food: "50-100g.", exercise: "Bajo/Moderado." },
+        lifespan: "12-15 años",
+        foodRecommendations: ["Alimento Húmedo", "Croquetas Premium"],
+        nutritionalAdvice: "Comida de alta calidad. Cuidado dental."
+    },
+    {
+        id: "pomera",
+        name: "Pomerania",
+        description: "Pequeño y esponjoso, con gran personalidad.",
+        image: "https://images.unsplash.com/photo-1583511657587-9ee05cb3988c?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Pomerania es una raza toy conocida por su pelaje abundante y su personalidad audaz. Son perros inteligentes y animados, aunque pueden ser algo vocales. Disfrutan de la compañía humana y se adaptan bien a la vida en interiores. Su pelaje requiere cepillado regular.",
+        gallery: [],
+        characteristics: { hair: "Doble capa, largo, abundante.", size: "Toy (18-30 cm, 1.5-3.5 kg).", temperament: "Inteligente, animado, audaz.", food: "50-100g.", exercise: "Bajo/Moderado." },
+        lifespan: "12-16 años",
+        foodRecommendations: ["Croquetas Premium", "Alimento Húmedo"],
+        nutritionalAdvice: "Comidas pequeñas y frecuentes. Cuidado dental."
+    },
+    {
+        id: "shiba-inu",
+        name: "Shiba Inu",
+        description: "Perro japonés alerta, independiente y con un pelaje distintivo.",
+        image: "https://images.unsplash.com/photo-1558394444-9a23885d357f?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Shiba Inu es una raza pequeña y atlética originaria de Japón. Son conocidos por su naturaleza independiente, su limpieza (a menudo se acicalan como gatos) y su 'grito Shiba' distintivo. Son leales a su familia pero pueden ser reservados con extraños y tener un fuerte instinto de presa. Requieren socialización temprana y entrenamiento consistente.",
+        gallery: [],
+        characteristics: { hair: "Doble capa, corto a medio.", size: "Pequeño (35-43 cm, 6-10 kg).", temperament: "Alerta, independiente, leal, algo terco.", food: "150-250g.", exercise: "Moderado a Alto." },
+        lifespan: "12-15 años",
+        foodRecommendations: ["Pescado", "Croquetas Premium"],
+        nutritionalAdvice: "Dietas de calidad. Vigilar sensibilidades digestivas."
+    },
+     {
+        id: "dalmata",
+        name: "Dálmata",
+        description: "Perro atlético con manchas únicas, juguetón y enérgico.",
+        image: "https://images.unsplash.com/photo-1596354126735-f064f737b9b1?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Dálmata es una raza distintiva conocida por su pelaje blanco con manchas negras o hígado. Originalmente utilizados como perros de carruaje, son muy activos y resistentes. Son juguetones, amigables y leales, pero necesitan mucho ejercicio para evitar el aburrimiento. Son propensos a la sordena y a problemas renales.",
+        gallery: [],
+        characteristics: { hair: "Corto, denso y liso.", size: "Grande (55-60 cm, 24-32 kg).", temperament: "Juguetón, activo, sensible, inteligente, algo terco.", food: "Aprox. 250-400g/día.", exercise: "Alto. Necesita ejercicio vigoroso diario." },
+        lifespan: "10-13 años",
+        foodRecommendations: ["Dieta Hipoalergenica", "Croquetas Premium"],
+        nutritionalAdvice: "Dieta baja en purinas para prevenir problemas renales. Asegurar hidratación."
+    },
+    {
+        id: "schnauzer-miniatura",
+        name: "Schnauzer Miniatura",
+        description: "Pequeño, robusto y alerta, con barba y cejas distintivas.",
+        image: "https://images.unsplash.com/photo-1593703051269-b81b234d5781?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Schnauzer Miniatura es un terrier pequeño y enérgico. Son conocidos por su apariencia barbuda y cejuda. Son perros alertas, inteligentes, leales y protectores, lo que los convierte en excelentes perros guardianes (aunque pequeños). Necesitan entrenamiento y socialización temprana. Su pelaje requiere cepillado regular y recorte.",
+        gallery: [],
+        characteristics: { hair: "Duro, alambrado con subpelo suave.", size: "Pequeño (30-35 cm, 5-8 kg).", temperament: "Alerta, amigable, inteligente, obediente, vivaz.", food: "Aprox. 100-200g/día.", exercise: "Moderado. Paseos diarios y juego." },
+        lifespan: "12-15 años",
+        foodRecommendations: ["Croquetas Premium", "Hígado"],
+        nutritionalAdvice: "Propensos a pancreatitis y cálculos renales. Dieta baja en grasa y control de minerales."
+    },
+    {
+        id: "boston-terrier",
+        name: "Boston Terrier",
+        description: "Inteligente, amigable y con apariencia de 'caballero americano'.",
+        image: "https://images.unsplash.com/photo-1598344918114-770588a760a0?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image (Placeholder, replace if needed)
+        fullDescription: "El Boston Terrier es una raza pequeña, musculosa y con un temperamento alegre. Son conocidos por su pelaje smoking y su personalidad encantadora. Son muy amigables, inteligentes y se adaptan bien a la vida en apartamentos. Como razas braquicefálicas, son sensibles al calor. Requieren ejercicio moderado.",
+        gallery: [],
+        characteristics: { hair: "Corto, liso. Colores atigrado, foca o negro con blanco.", size: "Pequeño (38-43 cm, 4.5-11 kg).", temperament: "Amigable, inteligente, vivaz, sociable.", food: "Aprox. 150-250g/día.", exercise: "Moderado. Paseos cortos, evitar calor extremo." },
+        lifespan: "11-13 años",
+        foodRecommendations: ["Alimento Húmedo", "Croquetas Premium"],
+        nutritionalAdvice: "Alimentos para razas pequeñas y braquicefálicas. Propensos a gases."
+    },
+     {
+        id: "samoyedo",
+        name: "Samoyedo",
+        description: "Sonriente, amigable y con un pelaje blanco y esponjoso.",
+        image: "https://images.unsplash.com/photo-1592620373637-4b7262245794?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image (Placeholder, replace if needed)
+        fullDescription: "El Samoyedo es una raza de trabajo originaria de Siberia, criada por el pueblo samoyedo para pastorear renos y tirar de trineos. Son conocidos por su pelaje blanco y denso y su expresión sonriente. Son perros amigables, gentiles y leales. Necesitan mucho ejercicio y disfrutan del clima frío. Su pelaje requiere un cepillado regular para evitar enredos.",
+        gallery: [],
+        characteristics: { hair: "Doble capa, denso, blanco.", size: "Mediano/Grande (50-56 cm, 20-30 kg).", temperament: "Amigable, gentil, adaptable, sociable.", food: "Aprox. 300-450g/día.", exercise: "Alto. Necesita ejercicio diario, disfruta del frío." },
+        lifespan: "12-14 años",
+        foodRecommendations: ["Pescado", "Croquetas Premium"],
+        nutritionalAdvice: "Alimentos de calidad para la salud del pelaje. Propensos a problemas digestivos."
+    },
+    {
+        id: "weimaraner",
+        name: "Weimaraner",
+        description: "Atlético, leal y enérgico perro de caza.",
+        image: "https://images.unsplash.com/photo-1561936070-b8ac1628060f?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Weimaraner, o 'Fantasma Gris', es una raza deportiva atlética originaria de Alemania. Son conocidos por su pelaje gris plateado y sus ojos claros. Son perros muy enérgicos, inteligentes, leales y forman fuertes vínculos con sus familias. Necesitan mucho ejercicio y estimulación mental y no les gusta estar solos por mucho tiempo. Son excelentes compañeros para corredores o personas muy activas.",
+        gallery: [],
+        characteristics: { hair: "Corto, liso. Color gris plateado o ratón.", size: "Grande (58-69 cm, 25-40 kg).", temperament: "Enérgico, inteligente, leal, alerta, amigable.", food: "Aprox. 350-500g/día.", exercise: "Muy Alto. Necesita ejercicio intenso y constante." },
+        lifespan: "10-13 años",
+        foodRecommendations: ["Carne de Pollo", "Carne de Res", "Croquetas Premium"],
+        nutritionalAdvice: "Dietas de alta energía. Vigilar riesgo de torsión gástrica."
+    },
+    {
+        id: "bull-terrier",
+        name: "Bull Terrier",
+        description: "Juguetón, valiente y con una cabeza en forma de huevo.",
+        image: "https://images.unsplash.com/photo-1596492784531-6e6eb5ea9de1?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image
+        fullDescription: "El Bull Terrier es una raza musculosa conocida por su cabeza distintiva en forma de huevo y sus ojos pequeños y triangulares. Son perros juguetones, enérgicos, valientes y leales a su familia. Requieren socialización temprana y entrenamiento consistente. Necesitan ejercicio regular y estimulación mental.",
+        gallery: [],
+        characteristics: { hair: "Corto, plano y duro.", size: "Mediano (sin límite de altura, peso proporcional: 20-30 kg Standard, 10-15 kg Miniatura).", temperament: "Juguetón, valiente, travieso, enérgico, leal.", food: "Aprox. 250-400g/día.", exercise: "Alto. Necesita ejercicio y juego diario." },
+        lifespan: "10-14 años",
+        foodRecommendations: ["Carne de Res", "Croquetas Premium", "Dieta Hipoalergenica"],
+        nutritionalAdvice: "Propensos a problemas de piel y riñón. Dietas que soporten la salud dermatológica."
+    },
+    {
+        id: "airedale-terrier",
+        name: "Airedale Terrier",
+        description: "El 'Rey de los Terriers', inteligente, activo y versátil.",
+        image: "https://images.unsplash.com/photo-1601758125873-9a384672c8b8?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image (Placeholder, replace if needed)
+        fullDescription: "El Airedale Terrier es el más grande de los terriers británicos. Son inteligentes, activos y versátiles, originalmente criados para cazar nutrias y después adaptados a muchos roles. Son perros leales y protectores. Requieren entrenamiento consistente y ejercicio regular. Su pelaje alambrado necesita cepillado y stripping regular.",
+        gallery: [],
+        characteristics: { hair: "Duro, denso, alambrado.", size: "Grande (58-61 cm, 23-29 kg).", temperament: "Inteligente, extrovertido, seguro, tenaz, leal.", food: "Aprox. 250-350g/día.", exercise: "Alto. Necesita ejercicio diario y estimulación." },
+        lifespan: "10-12 años",
+        foodRecommendations: ["Carne de Pollo", "Croquetas Premium"],
+        nutritionalAdvice: "Dietas que soporten la energía y la salud de la piel."
+    },
+     {
+        id: "husky-alasca",
+        name: "Malamute de Alaska",
+        description: "Poderoso, leal y amigable perro de trineo.",
+        image: "https://images.unsplash.com/photo-1598536547253-40d95282375b?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image (Placeholder, replace if needed)
+        fullDescription: "El Malamute de Alaska es una de las razas de perros de trineo más antiguas y grandes. Son perros poderosos, leales y amigables, criados para la resistencia y para tirar cargas pesadas en climas árticos. Tienen un fuerte instinto de manada y disfrutan de la compañía. Requieren mucho ejercicio y son propensos a problemas articulares.",
+        gallery: [],
+        characteristics: { hair: "Doble capa, grueso y denso.", size: "Grande/Gigante (60-65 cm, 34-38 kg+).", temperament: "Amigable, leal, juguetón, independiente.", food: "Aprox. 300-500g/día.", exercise: "Muy Alto. Necesita ejercicio intenso y constante, ideal en clima frío." },
+        lifespan: "10-12 años",
+        foodRecommendations: ["Carne de Res", "Croquetas Premium"],
+        nutritionalAdvice: "Dietas ricas en proteínas y grasas. Soporte articular. Controlar porciones."
+    },
+     {
+        id: "terranova",
+        name: "Terranova",
+        description: "Gigante gentil, dulce, paciente y un excelente nadador.",
+        image: "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Existing image (Placeholder, replace if needed)
+        fullDescription: "El Terranova es una raza gigante conocida por su naturaleza dulce, paciencia y habilidades de natación. Originalmente criados para ayudar a los pescadores en Terranova, son perros poderosos y resistentes al frío y al agua. Son excelentes perros familiares, muy buenos con los niños. Necesitan ejercicio moderado, especialmente natación. Requieren cepillado regular de su denso pelaje.",
+        gallery: [],
+        characteristics: { hair: "Doble capa, largo, denso y resistente al agua.", size: "Gigante (66-71 cm, 50-68 kg).", temperament: "Dulce, paciente, gentil, leal, bueno con niños.", food: "Aprox. 400-600g/día.", exercise: "Moderado. Disfruta nadar y pasear." },
+        lifespan: "9-10 años",
+        foodRecommendations: ["Carne de Res", "Croquetas Premium"],
+        nutritionalAdvice: "Fórmulas para razas gigantes. Controlar crecimiento en cachorros. Propenso a problemas cardíacos y torsión gástrica."
+    }
+];
+
+// Dog Foods Data Array
+// Este es el array donde se guarda la información de cada alimento.
+// Para añadir un ALIMENTO nuevo, copia un BLOQUE COMPLETO de datos de alimento
+// (desde '{' hasta '},') y pégalo DENTRO de este array [...],
+// justo antes del corchete de cierre final '];'.
+//
+// ¡RECUERDA LA COMA! Cada bloque de alimento, EXCEPTO el ÚLTIMO en la lista, debe ir seguido de una coma ','.
+// Ejemplo de un bloque de alimento para copiar y adaptar:
+/*
+     {
+        id: "nuevo-id-alimento", // Usa minúsculas y guiones (ej: "aceite-salmon") - ¡Debe ser único!
+        name: "Nombre del Alimento", // Nombre como se mostrará y se usará en foodRecommendations (ej: "Aceite de Salmón")
+        image: "URL_DE_LA_IMAGEN_DEL_ALIMENTO", // URL de la imagen para la tarjeta de alimento (ej: https://...)
+        description: "Una descripción corta sobre este tipo de alimento.", // Descripción del alimento
+        benefits: [
+            "Beneficio principal 1", // Lista de beneficios en puntos
+            "Beneficio clave 2"
+            // ... más beneficios
+        ], // Si no hay beneficios, déjalo así: []
+        recommendedBreeds: [
+            "id-raza-1", // ID de una raza a la que se recomienda este alimento (ej: "golden-retriever")
+            "id-raza-2"
+            // ... más IDs de razas
+        ] // Si no hay razas específicas, déjalo así: []
+     }, // <-- ¡Importante! Coma aquí si vas a añadir OTRO alimento después. Si es el último de la lista, BORRA esta coma.
+*/
+let dogFoods = [
+    {
+        id: "pollo",
+        name: "Carne de Pollo",
+        image: "https://images.unsplash.com/photo-1604542031658-5799ca5d7936?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Image updated with search result
+        description: "Fuente popular de proteína magra, altamente digestible para la mayoría de los perros. Ideal para energía y mantenimiento muscular.",
+        benefits: [
+            "Alta en proteína, baja en grasa.",
+            "Fácil digestión.",
+            "Buena fuente de aminoácidos esenciales.",
+            "Común en dietas hipoalergénicas (si no hay alergia específica)."
+        ],
+        recommendedBreeds: ["labrador", "beagle", "golden-retriever", "braco-aleman-pelo-corto", "australian-shepherd", "border-collie", "pointer", "shetland-sheepdog", "american-cocker-spaniel", "airedale-terrier"]
+    },
+    {
+        id: "higado",
+        name: "Hígado",
+        image: "https://images.unsplash.com/photo-1608500218890-c4ce553a8d6f?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Image updated with search result
+        description: "Órgano muy nutritivo, rico en vitaminas y minerales. Debe darse con moderación como parte de una dieta balanceada.",
+        benefits: [
+            "Excelente fuente de Vitamina A y Hierro.",
+            "Rico en vitaminas del complejo B.",
+            "Muy palatable (sabroso) para la mayoría de los perros.",
+            "Puede mejorar la salud de piel y pelaje."
+        ],
+        recommendedBreeds: ["yorkshire", "bulldog", "dachshund", "basset-hound", "maltes", "pomera", "chihuahua", "schnauzer-miniatura"]
+    },
+    {
+        id: "res",
+        name: "Carne de Res",
+        image: "https://images.unsplash.com/photo-1588168333986-5078d3ae3976?ixlib=rb-1.2.1&auto=format&fit=fit&w=400&q=70", // Image updated with search result
+        description: "Fuente rica en proteínas y hierro, proporciona energía sostenida. Adecuada para perros activos y de trabajo.",
+        benefits: [
+            "Alto contenido proteico.",
+            "Rica en Hierro, Zinc y Selenio.",
+            "Fuente de vitaminas B, especialmente B12.",
+            "Ayuda al desarrollo muscular."
+        ],
+        recommendedBreeds: ["pastor-aleman", "golden-retriever", "boxer", "gran-danes", "american-pit-bull-terrier", "bernese-mountain-dog", "braco-aleman-pelo-corto", "doberman-pinscher", "australian-shepherd", "akita-inu", "cane-corso", "san-bernardo", "rottweiler", "weimaraner", "bull-terrier", "husky-alasca", "terranova"]
+    },
+    {
+        id: "croquetas-premium", // Changed ID slightly for clarity
+        name: "Croquetas Premium",
+        image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Image updated with search result
+        description: "Alimento seco balanceado, formulado para cubrir necesidades nutricionales. La calidad varía mucho según la marca.",
+        benefits: [
+            "Nutrición completa y conveniente.",
+            "Ayuda a la limpieza dental (acción mecánica).",
+            "Larga vida útil y fácil almacenamiento.",
+            "Variedad de fórmulas (edad, tamaño, necesidades especiales)."
+        ],
+        recommendedBreeds: ["labrador", "pastor-aleman", "beagle", "bulldog", "bulldog-frances", "poodle-standard", "pug", "boxer", "dachshund", "gran-danes", "chihuahua", "american-pit-bull-terrier", "bernese-mountain-dog", "bichon-frise", "american-cocker-spaniel", "pointer", "great-pyrenees", "shetland-sheepdog", "akita-inu", "cane-corso", "basset-hound", "siberian-husky", "rottweiler", "poodle-miniature", "shih-tzu", "braco-aleman-pelo-corto", "doberman-pinscher", "australian-shepherd", "cavalier-king-charles", "border-collie", "san-bernardo", "maltes", "pomera", "shiba-inu", "dalmata", "schnauzer-miniatura", "boston-terrier", "samoyedo", "weimaraner", "bull-terrier", "airedale-terrier", "husky-alasca", "terranova"] // General recommendation for all breeds
+    },
+    {
+        id: "pescado",
+        name: "Pescado",
+        image: "https://images.unsplash.com/photo-1551712702-4b7335dd8706?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Image updated with search result
+        description: "Excelente fuente de proteínas y ácidos grasos Omega-3 (EPA/DHA), beneficioso para piel, pelaje y articulaciones.",
+        benefits: [
+            "Rico en Omega-3 (antiinflamatorio).",
+            "Promueve piel sana y pelaje brillante.",
+            "Beneficia la salud articular y cardiovascular.",
+            "Buena alternativa proteica para alergias."
+        ],
+        recommendedBreeds: ["golden-retriever", "labrador", "yorkshire", "poodle-standard", "poodle-miniature", "akita-inu", "shetland-sheepdog", "samoyedo"]
+    },
+    {
+        id: "alimento-humedo", // Changed ID slightly for clarity
+        name: "Alimento Húmedo",
+        image: "https://images.unsplash.com/photo-1607442652778-408a9202d0d9?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Image updated with search result
+        description: "Comida enlatada o en sobres con alto contenido de humedad. Muy palatable, útil para perros exigentes o con problemas dentales.",
+        benefits: [
+            "Alta hidratación.",
+            "Muy sabroso (alta palatabilidad).",
+            "Textura suave, fácil de comer.",
+            "Puede ser útil para mezclar medicamentos."
+        ],
+        recommendedBreeds: ["bulldog", "yorkshire", "bulldog-frances", "pug", "chihuahua", "bichon-frise", "american-cocker-spaniel", "basset-hound", "cavalier-king-charles", "shih-tzu", "maltes", "pomera"] // Good for small breeds or those needing moisture
+    },
+     {
+        id: "premios-entrenamiento",
+        name: "Premios de Entrenamiento",
+        image: "https://images.unsplash.com/photo-1517849276778-edaaee920498?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Image updated with search result
+        description: "Pequeñas golosinas diseñadas específicamente para usar durante el entrenamiento. Son sabrosos y motivadores.",
+        benefits: [
+            "Altamente motivadores para el aprendizaje.",
+            "Tamaño conveniente para sesiones de entrenamiento.",
+            "Refuerzo positivo eficaz.",
+            "Disponibles en diversas texturas y sabores."
+        ],
+        recommendedBreeds: ["labrador", "pastor-aleman", "beagle", "golden-retriever", "poodle-standard", "border-collie", "australian-shepherd", "schnauzer-miniatura", "boston-terrier", "weimaraner", "bull-terrier", "airedale-terrier"] // Útil para razas entrenables
+    },
+    {
+        id: "suplemento-articular",
+        name: "Suplemento Articular",
+        image: "https://images.unsplash.com/photo-1626782213073-fe3f632a1a4a?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Image updated with search result
+        description: "Suplementos que a menudo contienen glucosamina, condroitina y/o MSM para ayudar a mantener la salud de las articulaciones y la movilidad.",
+        benefits: [
+            "Apoyo a la salud de las articulaciones.",
+            "Puede reducir el dolor y la inflamación.",
+            "Mejora la movilidad (especialmente en senior o razas grandes).",
+            "Prevención para razas predispuestas."
+        ],
+        recommendedBreeds: ["pastor-aleman", "golden-retriever", "boxer", "gran-danes", "rottweiler", "san-bernardo", "bernese-mountain-dog", "great-pyrenees", "cane-corso", "australian-shepherd", "border-collie", "husky-alasca", "terranova"] // Esencial para razas grandes/gigantes o senior
+    },
+     {
+         id: "dieta-hipoalergenica",
+         name: "Dieta Hipoalergénica",
+         image: "https://images.unsplash.com/photo-1570161557118-de3e551d3b1a?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Image updated with search result
+         description: "Formulada con fuentes de proteínas y carbohidratos limitadas o novedosas para minimizar el riesgo de reacciones alérgicas o sensibilidades alimentarias.",
+         benefits: [
+             "Ayuda a identificar y manejar alergias/intolerancias.",
+             "Reduce síntomas cutáneos y digestivos.",
+             "Fuente de proteína única o hidrolizada.",
+             "Altamente digestible."
+         ],
+         recommendedBreeds: ["bulldog", "yorkshire", "pug", "bichon-frise", "shih-tzu", "american-pit-bull-terrier", "akita-inu", "dalmata", "bull-terrier"] // Para razas propensas a alergias
+     },
+      {
+          id: "dieta-control-peso",
+          name: "Dieta de Control de Peso",
+          image: "https://images.unsplash.com/photo-1597597205443-f41409ed482e?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Image updated with search result
+          description: "Más baja en calorías y/o alta en fibra para ayudar a los perros a alcanzar y mantener un peso saludable. Importante para prevenir problemas de salud.",
+          benefits: [
+              "Ayuda en la pérdida y manejo de peso.",
+              "Promueve la saciedad.",
+              "Menor densidad calórica.",
+              "Puede ayudar a la salud metabólica."
+          ],
+          recommendedBreeds: ["labrador", "bulldog", "beagle", "pug", "dachshund", "cavalier-king-charles", "maltes", "pomera", "basset-hound", "boston-terrier"] // Para razas propensas a la obesidad o perros con sobrepeso
+      },
+      {
+          id: "dieta-senior",
+          name: "Dieta Senior",
+          image: "https://images.unsplash.com/photo-1546238295-b084f3232224?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=70", // Image updated with search result
+          description: "Formulada con niveles ajustados de proteínas, grasas y calorías, a menudo enriquecida con antioxidantes y soporte articular para perros mayores.",
+          benefits: [
+              "Soporte articular y muscular.",
+              "Antioxidantes para la salud cognitiva.",
+              "Niveles de energía ajustados.",
+              "Altamente digestible."
+          ],
+          recommendedBreeds: ["pastor-aleman", "golden-retriever", "poodle-standard", "boxer", "dachshund", "gran-danes", "san-bernardo", "bernese-mountain-dog", "great-pyrenees", "shetland-sheepdog", "akita-inu", "cane-corso", "rottweiler", "weimaraner", "airedale-terrier", "husky-alasca", "terranova"] // Para perros de edad avanzada
+      }
+    // Puedes añadir más alimentos aquí si lo deseas
+];
+
+// Contact Methods Data
+let contactMethods = [
+    { icon: "📧", title: "Email", value: "Elisaved sinh jrjr.com" }, // Corrected email syntax
+    { icon: "📱", title: "Teléfono", value: "+34 612 345 678" },
+    { icon: "💬", title: "Redes Sociales", value: "@RazDogLiment" }
+];
+
+// Simple Calculator Recommendations (Mantengo estas por ahora, puedes ajustarlas si quieres)
+const foodRecommendations = [
+    { name: "Croquetas de Pollo y Arroz", description: "Una opción clásica y digestible para la mayoría de los perros adultos.", benefits: "Buena fuente de energía, fácil para el estómago." },
+    { name: "Fórmula de Salmón y Patata", description: "Ideal para perros con posible sensibilidad al pollo, rica en Omega-3.", benefits: "Promueve piel y pelaje saludables." },
+    { name: "Alimento Húmedo Mixto", description: "Combina la conveniencia de las croquetas con la palatabilidad de la comida húmeda.", benefits: "Aumenta la hidratación y el interés por la comida." }
+];
+
+// Advanced Calculator Recommendations (Mantengo estas por ahora, puedes ajustarlas si quieres)
+const especialesDisponibles = [
+    { name: "Dieta Específica por Raza", description: "Busca fórmulas diseñadas para las necesidades particulares de la raza de tu perro.", benefits: "Optimiza nutrientes para predisposiciones genéticas." },
+    { name: "Fórmula de Control de Peso", description: "Baja en calorías y alta en fibra para ayudar a perros con sobrepeso.", benefits: "Promueve la saciedad y la pérdida de peso saludable." },
+    { name: "Suplemento Articular con Condroprotectores", description: "Añade glucosamina y condroitina para proteger las articulaciones.", benefits: "Reduce el dolor y mejora la movilidad en perros mayores o con problemas." }
+];
+
+// ====================================
+// GLOBAL VARIABLES & STATE
+// ====================================
+let activeModalId = null; // Track the currently open modal
+const navScrollThreshold = 100; // Pixels scrolled before main nav hides/bottom nav appears
+
+
+// ====================================
+// INITIALIZATION & EVENT LISTENERS
+// ====================================
+document.addEventListener('DOMContentLoaded', () => {
+    loadFromLocalStorage(); // Load saved data if any
+    initializePageLayout(); // Generate dynamic HTML content
+    setupEventListeners(); // Add interactivity
+    setupCookieConsent(); // Handle cookie banner
+    updateDynamicDates(); // Update dates in legal modals etc.
+    // Initial scroll state check (important for page load at a scrolled position)
+    handleScrollEffects();
+});
+
+function initializePageLayout() {
+    generateNavItems();
+    generateBreedCards();
+    generateFoodCards();
+    generateBreedPages(); // Ahora incluye Esperanza de Vida
+    generateFooterQuickLinks();
+    populateBreedSelect();
+    // Initial state for calculator/nav/search handled by CSS/scroll listener
+}
+
+function setupEventListeners() {
+    // Scroll listener for navigation and search bubble changes
+    window.addEventListener('scroll', handleScrollEffects, { passive: true }); // Use passive listener for performance
+
+    // Close modals/lightbox with Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === "Escape") {
+            if (activeModalId) {
+                closeModal(activeModalId);
+            } else if (document.getElementById('lightbox')?.classList.contains('active')) {
+                closeLightbox();
+            }
+        }
+    });
+
+     // Close search modal if clicking outside its content area
+    const searchModal = document.getElementById('searchModal');
+    if (searchModal) {
+         searchModal.addEventListener('click', closeSearchModalOnClickOutside);
+    }
+
+    // Update calculator range slider value display
+    const activitySlider = document.getElementById('activityDetail');
+    const activityValueSpan = document.getElementById('activityValue');
+    if (activitySlider && activityValueSpan) {
+        activitySlider.addEventListener('input', () => {
+            activityValueSpan.textContent = activitySlider.value + ' min';
+        });
+        // Initial set
+        activityValueSpan.textContent = activitySlider.value + ' min';
+    }
+
+    // Open search modal if header search bar is focused (alternative trigger)
+     const headerSearchBar = document.getElementById('headerSearchBar');
+     if(headerSearchBar) {
+         headerSearchBar.addEventListener('focus', openSearchModal);
+     }
+}
+
+function updateDynamicDates() {
+    const dateElements = document.querySelectorAll('.legal-date, #currentYear');
+    const currentYear = new Date().getFullYear();
+    const currentDate = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+    dateElements.forEach(el => {
+        if (el.id === 'currentYear') {
+            el.textContent = currentYear;
+        } else {
+            el.textContent = currentDate;
+        }
+    });
+}
+
+// ====================================
+// DATA PERSISTENCE (LocalStorage)
+// ====================================
+// Functions loadFromLocalStorage & saveToLocalStorage (same as before, omitted for brevity)
+ function saveToLocalStorage() { try { localStorage.setItem('dogBreeds', JSON.stringify(dogBreeds)); localStorage.setItem('dogFoods', JSON.stringify(dogFoods)); localStorage.setItem('contactMethods', JSON.stringify(contactMethods)); } catch (e) { console.error("Error saving to localStorage:", e); } }
+ function loadFromLocalStorage() { try { const sB = localStorage.getItem('dogBreeds'); const sF = localStorage.getItem('dogFoods'); const sC = localStorage.getItem('contactMethods'); if (sB) dogBreeds = JSON.parse(sB); if (sF) dogFoods = JSON.parse(sF); if (sC) contactMethods = JSON.parse(sC); } catch (e) { console.error("Error loading from localStorage:", e); /* Use default data */ } }
+
+// ====================================
+// DYNAMIC HTML GENERATION
+// ====================================
+function generateNavItems() {
+    const mainNavContainer = document.getElementById('mainNav');
+    const stickyBottomNavContainer = document.getElementById('stickyBottomNav');
+    if (!mainNavContainer || !stickyBottomNavContainer) return;
+
+    // Las secciones ahora son Inicio, Alimentos, Calculadora
+    const navLinks = [ { id: 'inicio', text: 'Inicio' }, { id: 'alimentos', text: 'Alimentos' }, { id: 'calculadora', text: 'Calculadora' } ];
+    let mainNavHTML = '', stickyNavHTML = '';
+
+    navLinks.forEach(link => {
+        const linkHTML = `<a class="nav-item" href="#${link.id}" onclick="event.preventDefault(); showSection('${link.id}');">${link.text}</a>`;
+        mainNavHTML += linkHTML;
+        stickyNavHTML += linkHTML; // Add to both navs
+    });
+
+    mainNavContainer.innerHTML = mainNavHTML;
+    stickyBottomNavContainer.innerHTML = stickyNavHTML;
+}
+
+function generateBreedCards() {
+    const container = document.getElementById('breedGallery');
+    if (!container) return;
+    if (dogBreeds.length === 0) { container.innerHTML = '<p class="loading-placeholder">No hay razas disponibles.</p>'; return; }
+    let html = '';
+    dogBreeds.forEach(breed => {
+        html += `
+        <div class="breed-card" style="opacity:0; transform:translateY(20px);">
+            <a href="#${breed.id}" onclick="event.preventDefault(); showSection('${breed.id}');">
+                <img src="${breed.image}" alt="${breed.name}" class="breed-card-image" loading="lazy">
+                <div class="breed-card-content">
+                    <h3 class="breed-card-title">${breed.name}</h3>
+                    <p class="breed-card-desc">${breed.description}</p>
+                </div>
+            </a>
+        </div>`;
+    });
+    container.innerHTML = html;
+    // Staggered animation for entry
+    container.querySelectorAll('.breed-card').forEach((card, index) => {
+        setTimeout(() => {
+            card.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 50 * index);
+    });
+}
+
+function generateFoodCards() {
+    const container = document.getElementById('foodGallery');
+    if (!container) return;
+     if (dogFoods.length === 0) { container.innerHTML = '<p class="loading-placeholder">No hay alimentos disponibles.</p>'; return; }
+    let html = '';
+    dogFoods.forEach(food => {
+        let benefitsList = food.benefits.map(b => `<li>${b}</li>`).join('');
+        let breedPills = food.recommendedBreeds
+            .map(id => dogBreeds.find(b => b.id === id)).filter(b => b)
+            .map(b => `<span class="breed-pill" onclick="event.stopPropagation(); showSection('${b.id}')">${b.name}</span>`).join('');
+        html += `
+        <div class="food-card">
+            <div onclick="toggleFoodCard(this.closest('.food-card'))" style="cursor: pointer;">
+                <img src="${food.image}" alt="${food.name}" class="food-card-img" loading="lazy">
+                <div class="food-card-header">
+                    <h3 class="food-card-title">${food.name}</h3>
+                    <button class="expand-btn" aria-label="Expandir ${food.name}"><span class="expand-icon">+</span></button>
+                </div>
+            </div>
+            <div class="food-card-content" aria-hidden="true">
+                <p class="food-card-desc">${food.description}</p>
+                <h4 class="benefits-title">Beneficios:</h4><ul class="benefits-list">${benefitsList}</ul>
+                ${breedPills ? `<div class="breed-suggestions"><h4>Recomendado para:</h4><div class="breed-pills">${breedPills}</div></div>` : ''}
+            </div>
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+function generateBreedPages() {
+    const container = document.getElementById('breed-details-container');
+    if (!container) return;
+    let html = '';
+    // Mapeo de características incluyendo la esperanza de vida
+    const charMap = { hair: 'Pelaje', size: 'Tamaño', temperament: 'Temperamento', food: 'Alimentación', exercise: 'Ejercicio', lifespan: 'Esperanza de Vida' };
+    dogBreeds.forEach(breed => {
+        let galleryHTML = (breed.gallery || []).map(img => `<img src="${img}" alt="Galería ${breed.name}" class="mini-gallery-img" onclick="openLightbox(this.src)" loading="lazy">`).join('');
+        let foodRecHTML = (breed.foodRecommendations || [])
+            .map(foodName => {
+                 // Find the food object by name to get its ID
+                 const food = dogFoods.find(f => f.name === foodName);
+                 if (!food) {
+                     console.warn(`Food recommendation "${foodName}" not found in dogFoods array for breed "${breed.name}".`);
+                     return ''; // Skip if food name doesn't match any food ID
+                 }
+                 return `<div class="food-chip" onclick="showSection('alimentos'); setTimeout(() => {highlightAndExpandFoodCard(event, '${food.name}')}, 300)">${foodName}</div>`;
+            })
+            .join('');
+
+        let characteristicsHTML = '';
+        // Iterar sobre charMap para generar características, incluyendo lifespan
+        for (const key in charMap) {
+             // Verifica si la propiedad existe directamente en el objeto breed O dentro del objeto characteristics
+             const value = breed.hasOwnProperty(key) ? breed[key] : (breed.characteristics && breed.characteristics.hasOwnProperty(key) ? breed.characteristics[key] : undefined);
+             if (value !== undefined && value !== null && value !== "") { // Check for undefined, null, and empty string
+                  characteristicsHTML += `<div class="characteristic"><h3>${charMap[key]}</h3><p>${value}</p></div>`;
+             }
+        }
+
+
+        html += `
+        <section class="content breed-page" id="${breed.id}">
+             <article class="breed-detail">
+                 <img src="${breed.image}" alt="${breed.name}" class="breed-main-image" loading="lazy">
+                 <h2>${breed.name}</h2><p>${breed.fullDescription}</p>
+             </article>
+             ${galleryHTML ? `<h3 class="section-title" style="font-size: var(--font-size-large); margin-top: var(--spacing-lg);">Galería</h3><div class="mini-gallery">${galleryHTML}</div>` : ''}
+             ${characteristicsHTML ? `<h3 class="section-title" style="font-size: var(--font-size-large); margin-top: var(--spacing-lg);">Características</h3><div class="breed-characteristics">${characteristicsHTML}</div>` : ''}
+             ${foodRecHTML ? `<div class="food-recommendations"><h3>Alimentos Recomendados</h3><p>Estos alimentos son buenos para ${breed.name}:</p><div class="recommended-foods">${foodRecHTML}</div>${breed.nutritionalAdvice ? `<p style="margin-top: var(--spacing-md);"><strong>Consejo:</strong> ${breed.nutritionalAdvice}</p>` : ''}</div>` : ''}
+        </section>`;
+    });
+    container.innerHTML = html;
+}
+
+function generateFooterQuickLinks() {
+    const container = document.getElementById('footer-quick-links');
+    if (!container) return;
+    // Las secciones ahora son Inicio, Alimentos, Calculadora
+    const navLinks = [ { id: 'inicio', text: 'Inicio' }, { id: 'alimentos', text: 'Alimentos' }, { id: 'calculadora', text: 'Calculadora' } ];
+    let html = '';
+    navLinks.forEach(link => {
+        html += `<li><a href="#${link.id}" onclick="event.preventDefault(); showSection('${link.id}');">${link.text}</a></li>`;
+    });
+    container.innerHTML = html;
+}
+
+function generateModalContactMethods() {
+    const container = document.getElementById('modalContactMethods');
+    if (!container || container.querySelector('.contact-method')) return; // Prevent regeneration
+    container.innerHTML = ''; // Clear placeholder
+    if (contactMethods.length === 0) { container.innerHTML = '<p>No hay info de contacto.</p>'; return; }
+    let html = '';
+    contactMethods.forEach(c => {
+        // Estructura simple para mostrar ícono, título y valor
+        html += `<div class="contact-method" style="display: flex; align-items: center; margin-bottom: var(--spacing-sm);">
+                     <span class="contact-icon" style="font-size: 1.5em; margin-right: var(--spacing-sm);">${c.icon}</span>
+                     <div class="contact-details">
+                         <h4 style="margin: 0; font-size: var(--font-size-normal);">${c.title}</h4>
+                         <p style="margin: 0; font-size: var(--font-size-small);">${c.value}</p>
+                     </div>
+                 </div>`;
+    });
+    container.innerHTML = html;
+}
+
+function populateBreedSelect() {
+    const select = document.getElementById('breedSelect');
+    if (!select) return;
+    select.innerHTML = '<option value="otro" selected>Selecciona raza...</option>';
+    dogBreeds.sort((a, b) => a.name.localeCompare(b.name)).forEach(b => {
+        select.innerHTML += `<option value="${b.id}">${b.name}</option>`;
+    });
+}
+
+// ====================================
+// UI INTERACTIONS & NAVIGATION
+// ====================================
+ function showSection(sectionId) {
+     document.querySelectorAll('.content').forEach(s => s.classList.remove('active-section'));
+     let targetSection = document.getElementById(sectionId);
+
+     // Fallback for non-existent sections (e.g., bad hash)
+      // Asegura que solo las secciones válidas se muestren o se caiga a inicio
+      if (!targetSection && !['inicio', 'alimentos', 'calculadora'].includes(sectionId)) {
+          console.warn(`Section ${sectionId} not found, showing inicio.`);
+          sectionId = 'inicio';
+          targetSection = document.getElementById(sectionId);
+      }
+
+     if (targetSection) {
+         document.querySelectorAll('.content').forEach(s => s.style.display = 'none');
+         targetSection.style.display = 'block';
+         setTimeout(() => {
+             targetSection.classList.add('active-section');
+             if (targetSection.classList.contains('breed-page')) {
+                animateMiniGallery(targetSection);
+             }
+         }, 10);
+
+         // Scroll to section (consider nav height)
+         const headerHeight = (document.getElementById('mainNav')?.offsetHeight || navScrollThreshold) + 20;
+         const elementTop = targetSection.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+         window.scrollTo({ top: Math.max(0, elementTop), behavior: 'smooth' });
+
+         // Update hash in URL
+         if (history.pushState) {
+             history.pushState(null, null, `#${sectionId}`);
+         } else {
+             window.location.hash = `#${sectionId}`;
+         }
+     } else {
+         console.error(`Target section #${sectionId} not found.`);
+     }
+ }
+
+ function animateMiniGallery(sectionElement) {
+    const images = sectionElement.querySelectorAll('.mini-gallery-img');
+    images.forEach((img, index) => {
+        img.style.opacity = '0'; img.style.transform = 'scale(0.8)'; // Reset for animation
+        setTimeout(() => {
+            img.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            img.style.opacity = '1';
+            img.style.transform = 'scale(1)';
+        }, 100 * index + 50);
+    });
+}
+
+function handleScrollEffects() {
+    const mainNav = document.getElementById('mainNav');
+    const stickyBottomNav = document.getElementById('stickyBottomNav');
+    const searchBubble = document.getElementById('searchBubbleTrigger');
+    const headerSearch = document.getElementById('headerSearchContainer');
+    const footerElement = document.querySelector('footer');
+
+    if (!mainNav || !stickyBottomNav || !searchBubble || !headerSearch || !footerElement) return;
+
+    const scrollY = window.scrollY;
+    const viewportHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+    const scrollBottom = scrollY + viewportHeight; // Posición del borde inferior del viewport
+
+    // Calcula el umbral del 15% desde el final del documento
+    const bottom15PercentThreshold = documentHeight * 0.85; // El 85% del total de la altura
+
+    // Toggle main nav hidden/visible
+    if (scrollY > navScrollThreshold) {
+        mainNav.classList.add('hidden');
+    } else {
+        mainNav.classList.remove('hidden');
+    }
+
+    // Toggle search bubble and header search bar
+     if (scrollY > navScrollThreshold / 2) {
+         searchBubble.classList.add('visible');
+         headerSearch.classList.add('hidden'); // Oculta la barra de búsqueda del header cuando aparece el bubble
+     } else {
+         searchBubble.classList.remove('visible');
+         headerSearch.classList.remove('hidden'); // Muestra la barra de búsqueda del header
+     }
+
+    // Subtle background for main nav on slight scroll
+     if (scrollY > 50 && scrollY <= navScrollThreshold) {
+         mainNav.classList.add('scrolled');
+     } else if (scrollY <= 50) {
+         mainNav.classList.remove('scrolled');
+     }
+
+
+    // Toggle sticky bottom nav visibility (appears instantly when scrolling down past navThreshold)
+    if (scrollY > navScrollThreshold) {
+         stickyBottomNav.classList.add('visible-element');
+    } else {
+         stickyBottomNav.classList.remove('visible-element');
+    }
+
+    // Toggle footer visibility (appears when the bottom of the viewport is below the 15% threshold)
+    if (scrollBottom > bottom15PercentThreshold) {
+        footerElement.classList.add('visible-element');
+    } else {
+        footerElement.classList.remove('visible-element');
+    }
+
+}
+
+
+function toggleFoodCard(foodCardElement) {
+    if (!foodCardElement) return;
+    const isExpanded = foodCardElement.classList.toggle('expanded');
+    const content = foodCardElement.querySelector('.food-card-content');
+    const icon = foodCardElement.querySelector('.expand-icon');
+    if (content) content.setAttribute('aria-hidden', !isExpanded);
+    if (icon) icon.textContent = isExpanded ? '−' : '+'; // Change icon to minus when expanded
+}
+
+ // Actualizada para aceptar el evento y detener propagación si es necesario, y solo necesita el foodName
+function highlightAndExpandFoodCard(event, foodName) {
+    if (event) event.stopPropagation(); // Detener propagación del clic si viene de un chip
+
+    const foodCards = document.querySelectorAll('.food-card');
+    let foundCard = null;
+    foodCards.forEach(card => {
+        const title = card.querySelector('.food-card-title')?.innerText;
+        // Use a reliable way to match food name to card title
+        const cardFoodName = card.querySelector('.food-card-title')?.textContent.trim();
+        const shouldExpand = cardFoodName?.toLowerCase() === foodName.toLowerCase();
+
+        card.classList.toggle('expanded', shouldExpand);
+        const content = card.querySelector('.food-card-content');
+        if (content) content.setAttribute('aria-hidden', !shouldExpand);
+        const icon = card.querySelector('.expand-icon');
+         if (icon) icon.textContent = shouldExpand ? '−' : '+';
+
+        if (shouldExpand) {
+            foundCard = card;
+            // Añadir un borde temporal para resaltar
+            card.style.outline = '3px solid var(--color-success)';
+            card.style.transition = 'outline 0.1s ease-in-out'; // Transición rápida para el borde
+            setTimeout(() => { card.style.outline = 'none'; }, 2000); // Quitar borde después de 2 segundos
+        }
+    });
+    if (foundCard) {
+         setTimeout(() => { // Scroll después de que el layout se pueda ajustar
+             const navHeight = (document.getElementById('mainNav')?.offsetHeight || navScrollThreshold) + 20;
+             const cardTop = foundCard.getBoundingClientRect().top + window.pageYOffset - navHeight;
+             window.scrollTo({ top: Math.max(0, cardTop), behavior: 'smooth' });
+         }, 100); // Pequeño delay para asegurar que la tarjeta se expandió
+     }
+}
+
+ function openLightbox(imgSrc) { const lb=document.getElementById('lightbox'), li=document.getElementById('lightbox-img'); if(!lb||!li)return; li.src=imgSrc; lb.classList.add('active'); document.body.classList.add('modal-open'); }
+ function closeLightbox() { const lb=document.getElementById('lightbox'); if(!lb)return; lb.classList.remove('active'); document.body.classList.remove('modal-open'); }
+
+// ====================================
+// SEARCH MODAL LOGIC
+// ====================================
+ function openSearchModal() {
+    const modal = document.getElementById('searchModal');
+    if (modal && !modal.classList.contains('visible')) {
+        modal.classList.add('visible');
+        document.body.classList.add('modal-open');
+        document.getElementById('modalSearchInput')?.focus(); // Focus input on open
+         // Optionally clear previous results
+         document.getElementById('modalSearchResults').innerHTML = '<p style="text-align: center; padding: var(--spacing-md); color: #888;">Empieza a escribir...</p>';
+        activeModalId = 'searchModal'; // Track open modal
+    }
+ }
+
+ function closeSearchModal() {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('visible');
+        document.body.classList.remove('modal-open');
+        if (activeModalId === modalId) activeModalId = null;
+    }
+}
+</script>
+</body>
+</html>
